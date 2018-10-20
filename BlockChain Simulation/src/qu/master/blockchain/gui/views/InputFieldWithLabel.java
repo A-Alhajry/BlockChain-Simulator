@@ -35,6 +35,7 @@ public class InputFieldWithLabel extends JLabel {
 		
 		gbc.gridx = 0;
 		gbc.gridy = 0;
+		//gbc.weightx = 0;
 		gbc.fill = GridBagConstraints.WEST;
 		gbc.anchor = GridBagConstraints.FIRST_LINE_START;
 		gbc.ipady = (int) labelSize.getHeight();
@@ -44,6 +45,7 @@ public class InputFieldWithLabel extends JLabel {
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
 		gbc.gridy = 0;
+		//gbc.weightx = 1;
 		gbc.fill = GridBagConstraints.VERTICAL;
 		gbc.anchor = GridBagConstraints.FIRST_LINE_START;
 		gbc.ipady = (int) inputFieldSize.getHeight();

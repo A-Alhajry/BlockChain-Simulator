@@ -23,6 +23,8 @@ public class MainFrame extends AppFrame{
 	private BlockPanel blockPanel;
 	private LinearBlockChainPanel linearBlockChainPanel;
 	private TreeBlockChainPanel treeBlockChainPanel;
+	private KeysPanel keysPanel;
+	private TransactionPanel transactionPanel;
 	
 	private static final int hPadding = 15;
 	private static final int vPadding = 15;
@@ -33,6 +35,8 @@ public class MainFrame extends AppFrame{
 		menuItemsTitles.put("Hash", null);
 		menuItemsTitles.put("Block", null);
 		menuItemsTitles.put("Blockchain", new String[] {"LinkedList", "BinaryTree"});
+		menuItemsTitles.put("Keys", null);
+		menuItemsTitles.put("Transaction", null);
 
 		//linearBlockChainPanel = new LinearBlockChainPanel(LinearBlockChain.getSampleBlockChain());
 	}
@@ -45,8 +49,11 @@ public class MainFrame extends AppFrame{
 	}
 	private MainFrame() {
 		super("BlockChain Demo", 20000, 20000);
+		super.setPreferredSize(new Dimension(20000, 20000));
 		hashPanel = new HashPanel();
 		blockPanel = new BlockPanel(LinkedBlock.getValidBlock(), false);
+		keysPanel = new KeysPanel();
+		transactionPanel = new TransactionPanel();
 		initFrame();
 	}
 	
@@ -111,6 +118,14 @@ public class MainFrame extends AppFrame{
 		this.treeBlockChainPanel = treeBlockChainPanel;
 	}
 	
+	public KeysPanel getKeysPanel() {
+		return this.keysPanel;
+	}
+	
+	public TransactionPanel getTransactionPanel() {
+		return this.transactionPanel;
+	}
+	
 	public void setScreens() {
 		
 		try {
@@ -129,6 +144,14 @@ public class MainFrame extends AppFrame{
 			
 			if (!super.isScreenAdded("BinaryTree")) {
 				addScreen("BinaryTree", this.treeBlockChainPanel, false, true);
+			}
+			
+			if (!super.isScreenAdded("Keys")) {
+				addScreen("Keys", this.keysPanel, false, false);
+			}
+			
+			if (!super.isScreenAdded("Transaction")) {
+				addScreen("Transaction", this.transactionPanel, false, false);
 			}
 		}
 		
