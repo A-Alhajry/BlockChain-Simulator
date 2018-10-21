@@ -29,6 +29,10 @@ public class LinearBlockChainPanel extends BlockChainPanel {
 	private JRadioButton vButton;
 	private JScrollPane scroller;
 	
+	private ButtonGroup dirGroup;
+	private JRadioButton hRadio;
+	private JRadioButton vRadio;
+	
 	private static final int rows = 300;
 	private static final int cols = 44;
 	
@@ -54,6 +58,12 @@ public class LinearBlockChainPanel extends BlockChainPanel {
 		directionsButtonsGroup.add(hButton);
 		directionsButtonsGroup.add(vButton);
 		
+		dirGroup = new ButtonGroup();
+		hRadio = new JRadioButton("Horizontal");
+		hRadio.setActionCommand("H");
+		vRadio = new JRadioButton("Vertical");
+		vRadio.setActionCommand("V");
+		vRadio.setSelected(true);
 		
 	}
 	
@@ -64,13 +74,33 @@ public class LinearBlockChainPanel extends BlockChainPanel {
 		setLayout(new GridBagLayout());
 		panelsCount = blockPanels.size();
 		Dimension panelSize = new Dimension(1000, 1000);
-		int rowNumber = 1;
+		
+		JPanel dirPanel = new JPanel();
+		dirPanel.setLayout(new GridBagLayout());
+		
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weightx = 0;
+		gbc.weighty = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.FIRST_LINE_END;
+		gbc.insets = new Insets(vGap, hGap * 2, vGap, hGap * 2);
+		dirPanel.add(hRadio, gbc);
+		gbc.gridx = 1;
+		dirPanel.add(vRadio, gbc);
+		
+		gbc.gridx = 0;
+		gbc.anchor = GridBagConstraints.FIRST_LINE_START;
+		//add(dirPanel, gbc);
+		
+		int rowNumber = 2;
 		for(BlockPanel newPanel : blockPanels) {
 			
 			newPanel.initPanel();
 			newPanel.setPreferredSize(panelSize);
 			newPanel.setMinimumSize(panelSize);
-			GridBagConstraints gbc = new GridBagConstraints();
+			gbc = new GridBagConstraints();
 			if (rowNumber > 1) {
 				//break;
 			}
