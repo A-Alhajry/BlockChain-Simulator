@@ -1,4 +1,4 @@
-package qu.master.blockchain.documents.attestation.model.beans;
+package qu.master.blockchain.documentsattestation.model.beans;
 
 import java.time.LocalDateTime;
 

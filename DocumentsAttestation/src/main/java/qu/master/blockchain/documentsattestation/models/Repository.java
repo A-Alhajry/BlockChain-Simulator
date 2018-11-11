@@ -1,4 +1,4 @@
-package qu.master.blockchain.documents.attestation.models;
+package qu.master.blockchain.documentsattestation.models;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -11,8 +11,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import qu.master.blockchain.documents.attestation.model.beans.Enterprise;
-import qu.master.blockchain.documents.attestation.model.beans.EnterpriseService;
+import qu.master.blockchain.documentsattestation.model.beans.Enterprise;
+import qu.master.blockchain.documentsattestation.model.beans.EnterpriseService;
 
 public class Repository {
 	
