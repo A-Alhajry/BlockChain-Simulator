@@ -4,6 +4,7 @@ public class EnterpriseService {
 	
 	private String id;
 	private String title;
+	private EnterpriseServiceType type;
 	private String desc;
 	private String[] supportedFiles;
 
@@ -31,6 +32,14 @@ public class EnterpriseService {
 	
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	
+	public EnterpriseServiceType getType() {
+		return this.type;
+	}
+	
+	public void setType(EnterpriseServiceType type) {
+		this.type = type;
 	}
 	
 	public String getDesc() {

@@ -13,8 +13,9 @@ import java.util.List;
 
 import qu.master.blockchain.documentsattestation.model.beans.Enterprise;
 import qu.master.blockchain.documentsattestation.model.beans.EnterpriseService;
+import qu.master.blockchain.documentsattestation.model.beans.EnterpriseServiceType;
 
-public class Repository {
+public class BeansRepository {
 	
 	private static String databaseUrl = "jdbc:sqlite:database" + File.separator + "app.db";
 	private static String createScript = "database" + File.separator + "create_database.sql";
@@ -30,14 +31,15 @@ public class Repository {
 		}
 	}
 	
-	public List<Enterprise> getEnterprisesList() throws Exception {
+	public List<Enterprise> getEnterprisesList(EnterpriseServiceType type) throws Exception {
 		
 		List<Enterprise> enterprises = new ArrayList<>();
 		
 		try (Connection connection = getConnection()) {
-			String sql = " Select * From enterprise ";
-			Statement stmn = connection.createStatement();
-			ResultSet rs = stmn.executeQuery(sql);
+			String sql = " Select * From Enterprise Where type_id = ? ";
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+			pstmt.setInt(1, type.getId());
+			ResultSet rs = pstmt.executeQuery(sql);
 			
 			
 			while(rs.next()) {

@@ -30,12 +30,22 @@ public class ClientMainScreen extends JFrame {
 		setLayout(layout);
 		
 		SignRequestScreen signRequestScreen = new SignRequestScreen();
+		ViewSignsScreen viewSignsScreen = new ViewSignsScreen();
+		
 		JPanel signRequestPanel = new JPanel();
+		JPanel signViewPanel = new JPanel();
+		
 		signRequestPanel.setLayout(new BorderLayout());
 		signRequestPanel.add(signRequestScreen, BorderLayout.CENTER);
-		signRequestPanel.setVisible(true);
+		
+		signViewPanel.setLayout(new BorderLayout());
+		signViewPanel.add(viewSignsScreen, BorderLayout.CENTER);
+		
 		add(signRequestPanel);
+		add(viewSignsScreen);
+		
 		layout.addLayoutComponent(signRequestPanel, "NSR");
+		layout.addLayoutComponent(viewSignsScreen, "VSR");
 		
 		setMenu();
 	}
@@ -45,7 +55,7 @@ public class ClientMainScreen extends JFrame {
 		
 		JMenu signMenu = new JMenu("Sign");
 		signMenu.add(new JMenuItem(new MenuActionButton("New Request", "NSR", getContentPane(), layout)));
-		signMenu.add(new JMenuItem(new MenuActionButton("View List", "View Signatures", getContentPane(), layout)));
+		signMenu.add(new JMenuItem(new MenuActionButton("View List", "VSR", getContentPane(), layout)));
 		
 		JMenu verifyMenu = new JMenu("Verify");
 		verifyMenu.add(new JMenuItem(new MenuActionButton("New Request", "New Verification Request", getContentPane(), layout)));
