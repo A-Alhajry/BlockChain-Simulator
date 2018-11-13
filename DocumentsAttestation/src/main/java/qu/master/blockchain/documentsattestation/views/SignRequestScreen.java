@@ -120,6 +120,7 @@ public class SignRequestScreen extends AbstractScreen {
 		fileGbc.anchor = GridBagConstraints.FIRST_LINE_START;
 		fileGbc.insets = insets;
 		filePanel.add(fileInfoPanel , fileGbc);
+		
 		fileGbc.gridx = 1;
 		fileGbc.weightx = 0;
 		filePanel.add(fileButton, fileGbc);
@@ -135,24 +136,13 @@ public class SignRequestScreen extends AbstractScreen {
 		
 		int gridx = 0;
 		int gridy = 0;
-		addPanel(headerPanel, gridx, gridy++);
-		addPanel(enterprisePanel, gridx, gridy++);
-		addPanel(servicesPanel, gridx, gridy++);
-		addPanel(commentsPanel, gridx, gridy++);
-		addPanel(filePanel, gridx, gridy++);
-		addPanel(submitPanel, gridx, gridy++);
-		
+		super.addRow(this, headerPanel, insets, gridx, gridy++);
+		super.addRow(this, enterprisePanel, insets, gridx, gridy++);
+		super.addRow(this, servicesPanel, insets, gridx, gridy++);
+		super.addRow(this, commentsPanel, insets, gridx, gridy++);
+		super.addRow(this, filePanel, insets, gridx, gridy++);
+		super.addRow(this, submitPanel, insets, gridx, gridy++);
+
 	}
 	
-	private void addPanel(JPanel panel, int gridx, int gridy) {
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = gridx;
-		gbc.gridy = gridy;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		gbc.anchor = GridBagConstraints.FIRST_LINE_START;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.insets = new Insets(hGap, vGap, hGap, vGap);
-		add(panel, gbc);
-	}
 }

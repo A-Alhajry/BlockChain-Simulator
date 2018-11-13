@@ -31,9 +31,13 @@ public class ClientMainScreen extends JFrame {
 		
 		SignRequestScreen signRequestScreen = new SignRequestScreen();
 		ViewSignsScreen viewSignsScreen = new ViewSignsScreen();
+		VerifyRequestScreen verifyRequestScreen = new VerifyRequestScreen();
+		ViewVerificationsScreen viewVerScreen = new ViewVerificationsScreen();
 		
 		JPanel signRequestPanel = new JPanel();
 		JPanel signViewPanel = new JPanel();
+		JPanel verifyRequestPanel = new JPanel();
+		JPanel verViewPanel = new JPanel();
 		
 		signRequestPanel.setLayout(new BorderLayout());
 		signRequestPanel.add(signRequestScreen, BorderLayout.CENTER);
@@ -41,11 +45,23 @@ public class ClientMainScreen extends JFrame {
 		signViewPanel.setLayout(new BorderLayout());
 		signViewPanel.add(viewSignsScreen, BorderLayout.CENTER);
 		
-		add(signRequestPanel);
-		add(viewSignsScreen);
+		verifyRequestPanel.setLayout(new BorderLayout());
+		verifyRequestPanel.add(verifyRequestScreen, BorderLayout.CENTER);
 		
-		layout.addLayoutComponent(signRequestPanel, "NSR");
-		layout.addLayoutComponent(viewSignsScreen, "VSR");
+		verViewPanel.setLayout(new BorderLayout());
+		verViewPanel.add(viewVerScreen, BorderLayout.CENTER);
+		
+		
+		
+		add(signRequestPanel);
+		add(signViewPanel);
+		add(verifyRequestPanel);
+		add(verViewPanel);
+		
+		layout.addLayoutComponent(signRequestPanel, "SRF");
+		layout.addLayoutComponent(signViewPanel, "SRT");
+		layout.addLayoutComponent(verifyRequestPanel, "VRF");
+		layout.addLayoutComponent(verViewPanel, "VRT");
 		
 		setMenu();
 	}
@@ -54,12 +70,12 @@ public class ClientMainScreen extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		
 		JMenu signMenu = new JMenu("Sign");
-		signMenu.add(new JMenuItem(new MenuActionButton("New Request", "NSR", getContentPane(), layout)));
-		signMenu.add(new JMenuItem(new MenuActionButton("View List", "VSR", getContentPane(), layout)));
+		signMenu.add(new JMenuItem(new MenuActionButton("New Request", "SRF", getContentPane(), layout)));
+		signMenu.add(new JMenuItem(new MenuActionButton("View List", "SRT", getContentPane(), layout)));
 		
 		JMenu verifyMenu = new JMenu("Verify");
-		verifyMenu.add(new JMenuItem(new MenuActionButton("New Request", "New Verification Request", getContentPane(), layout)));
-		verifyMenu.add(new JMenuItem(new MenuActionButton("View List", "View Verificstions", getContentPane(), layout)));
+		verifyMenu.add(new JMenuItem(new MenuActionButton("New Request", "VRF", getContentPane(), layout)));
+		verifyMenu.add(new JMenuItem(new MenuActionButton("View List", "VRT", getContentPane(), layout)));
 		
 		menuBar.add(signMenu);
 		menuBar.add(verifyMenu);
