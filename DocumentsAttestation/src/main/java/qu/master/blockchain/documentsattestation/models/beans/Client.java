@@ -1,4 +1,4 @@
-package qu.master.blockchain.documentsattestation.model.beans;
+package qu.master.blockchain.documentsattestation.models.beans;
 
 public class Client {
 	

@@ -2,7 +2,8 @@ package qu.master.blockchain.documentsattestation;
 
 import javax.swing.SwingUtilities;
 
-import qu.master.blockchain.documentsattestation.views.*;
+import qu.master.blockchain.documentsattestation.models.BeansRepository;
+import qu.master.blockchain.documentsattestation.views.ClientMainScreen;
 
 /**
  * Hello world!
@@ -18,7 +19,7 @@ public class ApplicationMain {
 		
 		
 		try {
-			//Repository.createDatabase();
+			//BeansRepository.createDatabase();
 //			Repository repo = new Repository();
 //			List<Enterprise> enterprises = repo.getEnterprisesList();
 //			List<EnterpriseService> services = repo.getEnterprisesServicesList(enterprises.get(1).getId());

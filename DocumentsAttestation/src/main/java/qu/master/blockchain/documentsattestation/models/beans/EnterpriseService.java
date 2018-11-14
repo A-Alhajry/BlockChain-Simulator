@@ -1,4 +1,4 @@
-package qu.master.blockchain.documentsattestation.model.beans;
+package qu.master.blockchain.documentsattestation.models.beans;
 
 public class EnterpriseService {
 	
@@ -56,5 +56,18 @@ public class EnterpriseService {
 	
 	public void setSupportedFiles(String[] supportedFiles) {
 		this.supportedFiles = supportedFiles;
+	}
+	
+	public String getAllowedFilesToString() {
+		StringBuilder sb = new StringBuilder();
+		for(String fileType : this.supportedFiles) {
+			sb.append(fileType);
+		}
+		return sb.toString();
+	}
+	
+	@Override
+	public String toString() {
+		return this.title;
 	}
 }

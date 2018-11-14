@@ -1,4 +1,4 @@
-package qu.master.blockchain.documentsattestation.model.beans;
+package qu.master.blockchain.documentsattestation.models.beans;
 
 public class Enterprise {
 	
@@ -38,5 +38,10 @@ public class Enterprise {
 	
 	public void setPublicKey(String publicKey) {
 		this.publicKey = publicKey;
+	}
+	
+	@Override
+	public String toString() {
+		return this.getName();
 	}
 }

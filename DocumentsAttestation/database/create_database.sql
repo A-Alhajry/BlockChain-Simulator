@@ -1,3 +1,34 @@
+Drop Table If Exists Client;
+
+Drop Table If Exists Enterprise;
+
+Drop Table If Exists Admin;
+
+Drop Table If Exists Document;
+
+Drop Table If Exists DocumentSignature;
+
+Drop Table If Exists DocumentStatusType;
+
+Drop Table If Exists DocumentStatus;
+
+Drop Table If Exists EnterpriseServiceType;
+
+Drop Table If Exists EnterpriseService;
+
+Drop Table If Exists SignRequest;
+
+Drop Table If Exists SignResponse;
+
+Drop Table If Exists VerifyRequest;
+
+Drop Table If Exists VerifyResponse;
+
+Drop Table If Exists FileRecordType;
+
+Drop Table If Exists FileRecord;
+
+
 Create Table If Not Exists Client (
   id varchar,
   full_name varchar,
@@ -46,7 +77,7 @@ Create Table If Not Exists DocumentStatus (
 
 Create Table If Not Exists EnterpriseServiceType (
   id int,
-  name varchar,
+  name varchar
 );
 
 Create Table If Not Exists EnterpriseService (
@@ -89,12 +120,25 @@ Create Table If Not Exists VerifyResponse (
   status integer
 );
 
+Create Table If Not Exists FileRecordType (
+  id int,
+  name varchar
+);
+
+Create Table If Not Exists FileRecord (
+  id varchar,
+  bean_id,
+  type_id int,
+  class_name varchar,
+  address varchar
+);
+
 Delete From Client;
 Delete From Admin;
 Delete From Enterprise;
 Delete From DocumentStatusType;
 Delete From EnterpriseService;
-Delete From EnterpriserServiceType;
+Delete From EnterpriseServiceType;
 
 Insert Into Client(id, full_name, public_key) Values('6aefdda3-c1c8-4a8e-a5d6-7d314b6a2994', 'Abdulrahman Alkhayarin', '0x4c650add7333c2066845338aa12df9ddf0438fbc');
 
