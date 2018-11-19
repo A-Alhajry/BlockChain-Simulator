@@ -1,6 +1,5 @@
 package qu.master.blockchain.documentsattestation.views;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -8,14 +7,15 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -84,7 +84,7 @@ public class SignRequestScreen extends AbstractScreen {
 			fileLabel.setFont(font);
 			commentsLabel.setFont(font);
 			
-			initPanel();
+			initScreen();
 			setEvents();
 		}
 		
@@ -93,8 +93,9 @@ public class SignRequestScreen extends AbstractScreen {
 		}
 	}
 	
-	private void initPanel() {
-		
+	@Override
+	public void initScreen() {
+		removeAll();
 		Dimension labelSize = new Dimension(cols * 30, rows * 2);
 		Dimension textSize = new Dimension(cols * 30, rows * 3);
 		Dimension areaSize = new Dimension(cols * 30, rows * 20);
@@ -120,22 +121,22 @@ public class SignRequestScreen extends AbstractScreen {
 		JPanel headerPanel = new JPanel();
 		super.addHeader(headerPanel, headerLabel, headerFont);
 		JPanel enterprisePanel = new JPanel();
-		enterprisePanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
+		//enterprisePanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
 		super.addControl(enterprisePanel, enterpriseLabel, enterprisesList, insets, labelSize, labelSize);
 
 		JPanel servicesPanel = new JPanel();
-		servicesPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
+		//servicesPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
 		super.addControl(servicesPanel, serviceLabel, servicesList, insets, labelSize, labelSize);
 		
 		JPanel commentsPanel = new JPanel();
-		commentsPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
+		//commentsPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
 		super.addControl(commentsPanel, commentsLabel, commentsInput, insets, labelSize, areaSize);
 		
 		JPanel filePanel = new JPanel();
 		JPanel fileInfoPanel = new JPanel();
-		fileInfoPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
-		filePanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
-		super.addControl(fileInfoPanel, fileLabel, fileInput, insets, new Dimension((int) labelSize.getWidth() / 10, (int) labelSize.getHeight()), new Dimension((int) textSize.getWidth() / 2, (int) textSize.getHeight()));
+		//fileInfoPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
+		//filePanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
+		super.addControl(fileInfoPanel, fileLabel, fileInput, insets, new Dimension((int) labelSize.getWidth() / 10, (int) textSize.getHeight()), new Dimension((int) textSize.getWidth() / 2, (int) textSize.getHeight()));
 		fileButton.setPreferredSize(buttonSize);
 		fileButton.setMinimumSize(buttonSize);
 		filePanel.setLayout(new GridBagLayout());
@@ -159,7 +160,7 @@ public class SignRequestScreen extends AbstractScreen {
 		signButton.setMinimumSize(buttonSize);
 		submitPanel.add(signButton);
 		
-		setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+		//setBorder(BorderFactory.createLineBorder(Color.RED, 2));
 		setLayout(new GridBagLayout());
 		
 		int gridx = 0;
@@ -173,7 +174,9 @@ public class SignRequestScreen extends AbstractScreen {
 
 	}
 	
+	
 	private void setEvents() throws Exception {
+		
 		fileButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -190,11 +193,21 @@ public class SignRequestScreen extends AbstractScreen {
 			public void actionPerformed(ActionEvent ev) {
 				JComboBox<Enterprise> cb = (JComboBox<Enterprise>) ev.getSource();
 				Enterprise selectedEnterprise = (Enterprise) cb.getSelectedItem();
-				List<EnterpriseService> services = controller.getSignServices(selectedEnterprise.getId());
+				List<EnterpriseService> services;
+
+				if (selectedEnterprise.getId() != null) {
+					services = controller.getSignServices(selectedEnterprise.getId());
+				}
+				
+				else {
+					services = new ArrayList<>();
+				}
+				
 				servicesList.removeAllItems();
 				for(EnterpriseService service : services) {
 					servicesList.addItem(service);
 				}
+				
 			}
 		});
 		
@@ -208,6 +221,44 @@ public class SignRequestScreen extends AbstractScreen {
 					FileNameExtensionFilter filter = new FileNameExtensionFilter("Allowed Files : " + allowedFiles, selectedService.getSupportedFiles());
 					fileDialog.setFileFilter(filter);
 				}
+			}
+		});
+		
+		signButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					SignRequestScreen screen = SignRequestScreen.this;
+					
+					Enterprise selectedEnterprise = (Enterprise) enterprisesList.getSelectedItem();
+					EnterpriseService selectedService = (EnterpriseService) servicesList.getSelectedItem();
+					File filePath = fileDialog.getSelectedFile();
+					String comments = commentsInput.getText();
+					
+					if (selectedEnterprise.getId() == null) {
+						screen.showDialog("Missing Enterprise", "Please Select an Enterprise", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					
+					if (selectedService.getId() == null) {
+						screen.showDialog("Missing Service", "Please Select a Service", JOptionPane.ERROR_MESSAGE);
+					}
+					if (filePath == null) {
+						screen.showDialog("File Missing", "Please Select a File", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					
+					String password = JOptionPane.showInputDialog(SignRequestScreen.this, "Please Enter Your Password");
+
+					controller.createSignRequest(password, selectedEnterprise.getId(), selectedService.getId(), filePath.getAbsolutePath(), comments);
+					SignRequestScreen.this.showDialog("Success", "Request Successfully Submitted", JOptionPane.INFORMATION_MESSAGE);
+					ViewsManager.showClientSignsRequests();
+				}
+				
+				catch (Exception ex) {
+					JOptionPane.showMessageDialog(SignRequestScreen.this, "Error Occurred, Please View Logs", "Error Occurred", JOptionPane.ERROR_MESSAGE);
+				}
+				
 			}
 		});
 	}

@@ -15,6 +15,15 @@ public class Document {
 	private List<DocumentStatus> statusHistory;
 	private List<DocumentSignature> signHistory;
 	
+	public Document() {
+		
+	}
+	
+	public Document(String id, String title) {
+		this.id = id;
+		this.title = title;
+	}
+	
 	public String getId() {
 		return this.id;
 	}

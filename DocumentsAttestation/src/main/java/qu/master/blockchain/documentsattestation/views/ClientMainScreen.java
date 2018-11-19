@@ -17,6 +17,11 @@ public class ClientMainScreen extends JFrame {
 	private static int width = 1000;
 	private static int height = 1000;
 	
+	SignRequestScreen signRequestScreen = new SignRequestScreen();
+	ViewSignsScreen viewSignsScreen = new ViewSignsScreen();
+	VerifyRequestScreen verifyRequestScreen = new VerifyRequestScreen();
+	ViewVerificationsScreen viewVerScreen = new ViewVerificationsScreen();
+	
 	private CardLayout layout = new CardLayout();
 	
 	public ClientMainScreen(String title) {
@@ -29,10 +34,10 @@ public class ClientMainScreen extends JFrame {
 		super.setLocationRelativeTo(null);
 		setLayout(layout);
 		
-		SignRequestScreen signRequestScreen = new SignRequestScreen();
-		ViewSignsScreen viewSignsScreen = new ViewSignsScreen();
-		VerifyRequestScreen verifyRequestScreen = new VerifyRequestScreen();
-		ViewVerificationsScreen viewVerScreen = new ViewVerificationsScreen();
+		signRequestScreen = new SignRequestScreen();
+		viewSignsScreen = new ViewSignsScreen();
+		verifyRequestScreen = new VerifyRequestScreen();
+		viewVerScreen = new ViewVerificationsScreen();
 		
 		JPanel signRequestPanel = new JPanel();
 		JPanel signViewPanel = new JPanel();
@@ -64,6 +69,26 @@ public class ClientMainScreen extends JFrame {
 		layout.addLayoutComponent(verViewPanel, "VRT");
 		
 		setMenu();
+	}
+	
+	public void showSignRequestForm() {
+		signRequestScreen.initScreen();
+		layout.show(getContentPane(), "SRF");
+	}
+	
+	public void showVerifyRequestForm() {
+		verifyRequestScreen.initScreen();
+		layout.show(getContentPane(), "VRF");
+	}
+	
+	public void showClientSignRequestsScreen() {
+		viewSignsScreen.initScreen();
+		layout.show(getContentPane(), "SRT");
+	}
+	
+	public void showClientVerifyRequestsScreen() {
+		viewVerScreen.initScreen();
+		layout.show(getContentPane(), "VRT");
 	}
 	
 	private void setMenu() {

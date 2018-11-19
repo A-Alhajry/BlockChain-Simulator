@@ -8,13 +8,23 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
+import qu.master.blockchain.documentsattestation.models.beans.Client;
+import qu.master.blockchain.documentsattestation.models.beans.Document;
+import qu.master.blockchain.documentsattestation.models.beans.DocumentStatus;
 import qu.master.blockchain.documentsattestation.models.beans.Enterprise;
 import qu.master.blockchain.documentsattestation.models.beans.EnterpriseService;
 import qu.master.blockchain.documentsattestation.models.beans.EnterpriseServiceType;
 import qu.master.blockchain.documentsattestation.models.beans.FileRecord;
+import qu.master.blockchain.documentsattestation.models.beans.RequestStatus;
+import qu.master.blockchain.documentsattestation.models.beans.SignRequest;
 
 public class BeansRepository {
 	
@@ -32,6 +42,25 @@ public class BeansRepository {
 		}
 	}
 	
+	public List<Client> getClients() throws Exception{
+		try (Connection connection = getConnection()) {
+			String sql = " Select * From Client ";
+			Statement st = connection.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			List<Client> result = new ArrayList<>();
+			
+			while (rs.next()) {
+				String id = rs.getString("id");
+				String fullName = rs.getString("full_name");
+				String publicKey = rs.getString("public_key");
+				
+				result.add(new Client(id, fullName, publicKey));
+			}
+			
+			return result;
+		}
+	}
+	
 	public List<Enterprise> getEnterprisesList() throws Exception {
 		
 		List<Enterprise> enterprises = new ArrayList<>();
@@ -46,7 +75,7 @@ public class BeansRepository {
 				String id = rs.getString("id");
 				String name = rs.getString("name");
 				String publicKey = rs.getString("public_key");
-				
+								
 				enterprises.add(new Enterprise(id, name, publicKey));
 			}
 		}
@@ -133,6 +162,96 @@ public class BeansRepository {
 		}
 	}
 	
+	public boolean addDocument(Document document) throws Exception{
+		
+		try (Connection connection = getConnection()) {
+			String sql = " Insert Into Document(id, title, creation_time, hash, user_sign, owner_id) Values(?, ?, ?, ?, ?, ?)";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.setString(1, document.getId());
+			ps.setString(2, document.getTitle());
+			ps.setTimestamp(3, Timestamp.from(document.getCreationTime().toInstant(ZoneOffset.UTC)));
+			ps.setString(4, document.getHash());
+			ps.setString(5, document.getUserSign());
+			ps.setString(6, document.getOwner().getId());
+			
+			return ps.execute();
+		}
+	}
+	
+	public boolean addDocumentStatus(String documentId, DocumentStatus status) throws Exception {
+		try (Connection connection = getConnection()) {
+			String sql = " Insert Into DocumentStatus(id, timestamp, type_id) Values(?, ?, ?)";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.setString(1, status.getId());
+			ps.setTimestamp(2, Timestamp.from(status.getStatusTime().toInstant(getLocalOffset())));
+			ps.setInt(3, status.getType().getId());
+			
+			return ps.execute();
+		}
+	}
+	
+	public boolean addSignRequest(SignRequest req) throws Exception{
+		try (Connection connection = getConnection()) {
+			String sql = " Insert Into SignRequest(id, user_id, enterprise_id, service_id, document_id, request_time, comments, status) Values(?, ?, ?, ?, ?, ?, ?, ?) ";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.setString(1, req.getId());
+			ps.setString(2, req.getUserId());
+			ps.setString(3, req.getEnterpriseId());
+			ps.setString(4, req.getServiceId());
+			ps.setString(5, req.getDocumentId());
+//			ps.setTimestamp(6, Timestamp.from(req.getRequestTime().toInstant(ZoneOffset.UTC)));
+			ps.setLong(6, req.getRequestTime().toEpochSecond(getLocalOffset()));
+			ps.setString(7, req.getComments());
+			ps.setInt(8, req.getStatus().getId());
+			
+			return ps.execute();
+		}
+	}
+	
+	public List<SignRequest> getSignRequestsByClient(String clientId) throws Exception{
+		try (Connection connection = getConnection()) {
+			String sql = " Select sr.*, e.name e_name, s.title s_title, d.title d_title, c.full_name c_name From SignRequest sr  ";
+			sql += " Inner Join Enterprise e On e.id = sr.enterprise_id ";
+			sql += " Inner Join EnterpriseService s On s.id = sr.service_id ";
+			sql += " Inner Join Document d On d.id = sr.document_id ";
+			sql += " Inner Join Client c On c.id = sr.user_id ";
+			sql += " Order By request_time desc ";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			//ps.setString(1, clientId);
+			ResultSet rs = ps.executeQuery();
+			List<SignRequest> result = new ArrayList<>();
+			
+			while (rs.next()) {
+
+				SignRequest req = new SignRequest();
+				req.setId(rs.getString("id"));
+				req.setUserId(rs.getString("user_id"));
+				req.setEnterpriseId(rs.getString("enterprise_id"));
+				req.setServiceId(rs.getString("service_id"));
+				req.setDocumentId(rs.getString("document_id"));
+				req.setRequestTime(LocalDateTime.ofInstant(Instant.ofEpochSecond(rs.getInt("request_time")), getLocalOffset()));
+				//req.setRequestTime(rs.getTimestamp("request_time").toLocalDateTime());
+				req.setComments(rs.getString("comments"));
+				req.setStatus(RequestStatus.getStatusById(rs.getInt("status")));
+				
+				String enterpriseName = rs.getString("e_name");
+				String serviceName = rs.getString("s_title");
+				String documentTitle = rs.getString("d_title");
+				String clientName = rs.getString("c_name");
+				
+				req.setClient(new Client(clientId, clientName, null));
+				req.setEnterprise(new Enterprise(req.getEnterpriseId(), enterpriseName, null));
+				req.setService(new EnterpriseService(req.getServiceId(), serviceName, null, null));
+				req.setDocument(new Document(req.getDocumentId(), documentTitle));
+				
+				result.add(req);
+				
+			}
+			
+			return result;
+		}
+	}
+	
 	private static Connection getConnection() throws Exception{
 		return DriverManager.getConnection(databaseUrl);
 	}
@@ -150,5 +269,9 @@ public class BeansRepository {
 		
 		return true;
 		
+	}
+	
+	private ZoneOffset getLocalOffset() {
+		return ZoneOffset.systemDefault().getRules().getOffset(Instant.now());
 	}
 }

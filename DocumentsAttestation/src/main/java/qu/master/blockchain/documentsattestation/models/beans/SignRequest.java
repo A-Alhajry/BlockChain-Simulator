@@ -10,8 +10,13 @@ public class SignRequest {
 	private String serviceId;
 	private String documentId;
 	private String comments;
+	private RequestStatus status;
 	private LocalDateTime requestTime;
+	private Client client;
 	private Document document;
+	private DocumentStatus documentStatus;
+	private Enterprise enterprise;
+	private EnterpriseService service;
 	
 	public String getId() {
 		return this.id;
@@ -61,6 +66,14 @@ public class SignRequest {
 		this.comments = comments;
 	}
 	
+	public void setStatus(RequestStatus status) {
+		this.status = status;
+	}
+	
+	public RequestStatus getStatus() {
+		return this.status;
+	}
+	
 	public LocalDateTime getRequestTime() {
 		return this.requestTime;
 	}
@@ -69,12 +82,43 @@ public class SignRequest {
 		this.requestTime = requestTime;
 	}
 	
+	public void setClient(Client client) {
+		this.client = client;
+	}
+	
+	public Client getClient() {
+		return this.client;
+	}
 	public Document getDocument() {
 		return this.document;
 	}
 	
 	public void setDocument(Document document) {
 		this.document = document;
+	}
+	
+	public void setDocumentStatus(DocumentStatus documentStatus) {
+		this.documentStatus = documentStatus;
+	}
+	
+	public DocumentStatus getDocumentStatus() {
+		return this.documentStatus;
+	}
+	
+	public void setEnterprise(Enterprise enterprise) {
+		this.enterprise = enterprise;
+	}
+	
+	public Enterprise getEnterprise() {
+		return this.enterprise;
+	}
+	
+	public void setService(EnterpriseService service) {
+		this.service = service;
+	}
+	
+	public EnterpriseService getService() {
+		return this.service;
 	}
 	
 }

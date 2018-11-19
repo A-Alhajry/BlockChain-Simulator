@@ -16,7 +16,10 @@ public class EnterpriseService {
 		this.id = id;
 		this.title = title;
 		this.desc = desc;
-		this.supportedFiles = supportedFiles.split(",");
+		
+		if (supportedFiles != null) {
+			this.supportedFiles = supportedFiles.split(",");
+		}
 	}
 	public String getId() {
 		return this.id;

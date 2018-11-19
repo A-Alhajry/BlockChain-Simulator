@@ -6,6 +6,15 @@ public class Client {
 	private String fullName;
 	private String publicKey;
 	
+	public Client() {
+		
+	}
+	
+	public Client(String id, String fullName, String publicKey) {
+		this.id = id;
+		this.fullName = fullName;
+		this.publicKey = publicKey;
+	}
 	
 	public String getId() {
 		return this.id;
