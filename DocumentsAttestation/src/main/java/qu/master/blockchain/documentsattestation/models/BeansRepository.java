@@ -11,7 +11,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +24,7 @@ import qu.master.blockchain.documentsattestation.models.beans.EnterpriseServiceT
 import qu.master.blockchain.documentsattestation.models.beans.FileRecord;
 import qu.master.blockchain.documentsattestation.models.beans.RequestStatus;
 import qu.master.blockchain.documentsattestation.models.beans.SignRequest;
+import qu.master.blockchain.documentsattestation.models.beans.VerifyRequest;
 
 public class BeansRepository {
 	
@@ -192,7 +192,7 @@ public class BeansRepository {
 	
 	public boolean addSignRequest(SignRequest req) throws Exception{
 		try (Connection connection = getConnection()) {
-			String sql = " Insert Into SignRequest(id, user_id, enterprise_id, service_id, document_id, request_time, comments, status) Values(?, ?, ?, ?, ?, ?, ?, ?) ";
+			String sql = " Insert Into SignRequest(id, user_id, enterprise_id, service_id, document_id, request_time, comments, status, contract_address) Values(?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 			PreparedStatement ps = connection.prepareStatement(sql);
 			ps.setString(1, req.getId());
 			ps.setString(2, req.getUserId());
@@ -203,7 +203,43 @@ public class BeansRepository {
 			ps.setLong(6, req.getRequestTime().toEpochSecond(getLocalOffset()));
 			ps.setString(7, req.getComments());
 			ps.setInt(8, req.getStatus().getId());
+			ps.setString(9, req.getContractAddress());
 			
+			return ps.execute();
+		}
+	}
+	
+	public boolean addVerifyRequest(VerifyRequest req) throws Exception {
+		try (Connection connection = getConnection()) {
+			String sql = " Insert Into VerifyRequest(id, user_id, enterprise_id, request_time, contract_address, document_sign_id, status) Values(?, ?, ?, ?, ?, ?, ?)";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.setString(1, req.getId());
+			ps.setString(2, req.getUserId());
+			ps.setString(3, req.getEnterpriseId());
+			ps.setLong(4, req.getRequestTime().toEpochSecond(getLocalOffset()));
+			ps.setString(5, req.getContractAddress());
+			ps.setString(6, req.getDocumentSignId());
+			ps.setInt(7, req.getStatus().getId());
+			return ps.execute();
+		}
+	}
+	public boolean updateSignRequestStatus(String requestId, RequestStatus newStatus) throws Exception {
+		
+		try (Connection connection = getConnection()) {
+			String sql = " Update SignRequest Set status = ? Where id = ? ";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.setString(1, newStatus.getName());
+			ps.setString(2, requestId);
+			return ps.execute();
+		}
+	}
+	
+	public boolean updateVerifyRequest(String requestId, RequestStatus newStatus) throws Exception {
+		try (Connection connection = getConnection()) {
+			String sql = " Update VerifyRequest Set status = ? Where id = ? ";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.setString(1, newStatus.getName());
+			ps.setString(2, requestId);
 			return ps.execute();
 		}
 	}
@@ -233,6 +269,7 @@ public class BeansRepository {
 				//req.setRequestTime(rs.getTimestamp("request_time").toLocalDateTime());
 				req.setComments(rs.getString("comments"));
 				req.setStatus(RequestStatus.getStatusById(rs.getInt("status")));
+				req.setContractAddress(rs.getString("contract_address"));
 				
 				String enterpriseName = rs.getString("e_name");
 				String serviceName = rs.getString("s_title");
@@ -246,6 +283,30 @@ public class BeansRepository {
 				
 				result.add(req);
 				
+			}
+			
+			return result;
+		}
+	}
+	
+	public List<VerifyRequest> getVerifyRequestsByClient(String clientId) throws Exception {
+		
+		try(Connection connection = getConnection()){
+			String sql = " Select * From VerifyRequest ";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+			List<VerifyRequest> result = new ArrayList<VerifyRequest>();
+			
+			while(rs.next()) {
+				VerifyRequest req = new VerifyRequest();
+				req.setId(rs.getString("id"));
+				req.setUserId(rs.getString("user_id"));
+				req.setEnterpriseId(rs.getString("enterprise_id"));
+				req.setDocumentSignId(rs.getString("document_sign_id"));
+				req.setContractAddress("contract_address");
+				req.setStatus(RequestStatus.getStatusById(rs.getInt("status")));
+				req.setRequestTime(LocalDateTime.ofInstant(Instant.ofEpochSecond(rs.getInt("request_time")), getLocalOffset()));
+				result.add(req);
 			}
 			
 			return result;

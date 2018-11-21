@@ -9,6 +9,7 @@ public class SignRequest {
 	private String enterpriseId;
 	private String serviceId;
 	private String documentId;
+	private String contractAddress;
 	private String comments;
 	private RequestStatus status;
 	private LocalDateTime requestTime;
@@ -56,6 +57,14 @@ public class SignRequest {
 	
 	public void setDocumentId(String documentId) {
 		this.documentId = documentId;
+	}
+	
+	public void setContractAddress(String contractAddress) {
+		this.contractAddress = contractAddress;
+	}
+	
+	public String getContractAddress() {
+		return this.contractAddress;
 	}
 	
 	public String getComments() {

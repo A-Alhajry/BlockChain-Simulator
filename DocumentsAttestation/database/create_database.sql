@@ -32,6 +32,8 @@ Drop Table If Exists FileRecord;
 Create Table If Not Exists Client (
   id varchar,
   full_name varchar,
+  username varchar,
+  password varchar,
   public_key varchar
 );
 
@@ -72,7 +74,7 @@ Create Table If Not Exists DocumentStatusType (
 Create Table If Not Exists DocumentStatus (
   id varchar,
   timestamp datetime,
-  type integer
+  type_id integer
 );
 
 Create Table If Not Exists EnterpriseServiceType (
@@ -95,8 +97,10 @@ Create Table If Not Exists SignRequest (
   enterprise_id varchar,
   service_id varchar,
   document_id varchar,
-  request_time datetime,
-  comments varchar
+  request_time integer,
+  contract_address varchar,
+  comments varchar,
+  status integer
 );
 
 Create Table If Not Exists SignResponse (
@@ -109,9 +113,12 @@ Create Table If Not Exists SignResponse (
 
 Create Table If Not Exists VerifyRequest (
   id varchar,
-  request_time datetime,
+  user_id varchar,
+  enterprise_id varchar,
+  request_time integer,
   contract_address varchar,
-  document_sign_id varchar
+  document_sign_id varchar,
+  status integer
 );
 
 Create Table If Not Exists VerifyResponse (
@@ -140,7 +147,7 @@ Delete From DocumentStatusType;
 Delete From EnterpriseService;
 Delete From EnterpriseServiceType;
 
-Insert Into Client(id, full_name, public_key) Values('6aefdda3-c1c8-4a8e-a5d6-7d314b6a2994', 'Abdulrahman Alkhayarin', '0x4c650add7333c2066845338aa12df9ddf0438fbc');
+Insert Into Client(id, full_name, public_key, username, password) Values('6aefdda3-c1c8-4a8e-a5d6-7d314b6a2994', 'Abdulrahman Alkhayarin', '0x5c26cebcc951b5fcb8ce30423bd89e1fa59d3c96', 'aalkhayarin', 'mypassword');
 
 Insert Into Enterprise(id, name, public_key) Values('8bdb2178-8484-4fde-a4b1-d2e7fcacb771', 'Qatar University', '0x3e173db2f7eeb59894fc9c969c85334abfc170ae');
 Insert Into Enterprise(id, name, public_key) Values('16f1fd8b-b80b-43e4-9e27-9aa78b7f6a5f', 'Hamad Medical Corporation', '0x28c2add8276941044e1f112afa72c2b44ce1894a');
@@ -159,14 +166,14 @@ Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported
 Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('ffc156fe-7fc1-4f51-8e22-63dd67a9c98a', '3771af1f-28d2-4734-952e-71031f15cc9d', 'Certificate Of Good Conduct', 1, '', 'pdf');
 
 
-Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('c38169f6-d514-4ab7-9176-2fd56426ea72', '8bdb2178-8484-4fde-a4b1-d2e7fcacb771', 'Graduation Statement', 2, '', 'pdf');
-Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('e44bcd93-d10f-4a6e-982b-b54bdd2fcf49', '8bdb2178-8484-4fde-a4b1-d2e7fcacb771', 'Academic Transcript', 2, '', 'pdf');
-Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('795c538d-438a-4a22-96f4-2ff440e74364', '8bdb2178-8484-4fde-a4b1-d2e7fcacb771', 'Degree Evaluation', 2, '', 'pdf');
+Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('9fd907fd-70d0-42d9-b6bb-b14cfe6ebd9b', '8bdb2178-8484-4fde-a4b1-d2e7fcacb771', 'Graduation Statement', 2, '', 'pdf');
+Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('6be08d4c-eaad-4f0a-aa05-a12c8386af49', '8bdb2178-8484-4fde-a4b1-d2e7fcacb771', 'Academic Transcript', 2, '', 'pdf');
+Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('d36aef7a-cd0b-407f-b75c-c1282f8def10', '8bdb2178-8484-4fde-a4b1-d2e7fcacb771', 'Degree Evaluation', 2, '', 'pdf');
 
-Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('a89f08dc-dbc1-48b6-94ac-a41e62298fbe', '16f1fd8b-b80b-43e4-9e27-9aa78b7f6a5f', 'Birth Certificate', 2, '', 'pdf');
-Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('e122ddeb-e086-4d9e-b2e4-c41847ca9c6f', '16f1fd8b-b80b-43e4-9e27-9aa78b7f6a5f', 'Job Certificate', 2, '', 'pdf');
+Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('df7b139d-e997-4e74-82dc-f0746d31c0e0', '16f1fd8b-b80b-43e4-9e27-9aa78b7f6a5f', 'Birth Certificate', 2, '', 'pdf');
+Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('3fde54e6-e1c0-471f-b6cc-c9ed362297fd', '16f1fd8b-b80b-43e4-9e27-9aa78b7f6a5f', 'Job Certificate', 2, '', 'pdf');
 
-Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('ffc156fe-7fc1-4f51-8e22-63dd67a9c98a', '3771af1f-28d2-4734-952e-71031f15cc9d', 'Certificate Of Good Conduct', 2, '', 'pdf');
+Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('7c62797c-1a42-4842-b130-ac87f6bea81f', '3771af1f-28d2-4734-952e-71031f15cc9d', 'Certificate Of Good Conduct', 2, '', 'pdf');
 
 Insert Into DocumentStatusType(id, name) Values(1, 'Created');
 Insert Into DocumentStatusType(id, name) Values(2, 'Sent To Sign');

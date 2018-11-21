@@ -5,6 +5,8 @@ public class Client {
 	private String id;
 	private String fullName;
 	private String publicKey;
+	private String username;
+	private String password;
 	
 	public Client() {
 		
@@ -38,5 +40,21 @@ public class Client {
 	
 	public void setPublicKey(String publicKey) {
 		this.publicKey = publicKey;
+	}
+	
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
+	public String getUsername() {
+		return this.username;
+	}
+	
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public String getPassword() {
+		return this.password;
 	}
 }
