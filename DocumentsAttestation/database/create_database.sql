@@ -140,6 +140,15 @@ Create Table If Not Exists FileRecord (
   address varchar
 );
 
+Create Table If Not Exists SealedDocument (
+  id varchar,
+  document_id varchar,
+  document_location varchar,
+  party_id varchar,
+  party_type varchar,
+  secret_key varchar
+);
+
 Delete From Client;
 Delete From Admin;
 Delete From Enterprise;

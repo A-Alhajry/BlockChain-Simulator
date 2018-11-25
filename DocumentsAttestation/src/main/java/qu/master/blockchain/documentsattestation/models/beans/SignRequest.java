@@ -18,6 +18,7 @@ public class SignRequest {
 	private DocumentStatus documentStatus;
 	private Enterprise enterprise;
 	private EnterpriseService service;
+	private boolean isDocumentValid;
 	
 	public String getId() {
 		return this.id;
@@ -128,6 +129,14 @@ public class SignRequest {
 	
 	public EnterpriseService getService() {
 		return this.service;
+	}
+	
+	public boolean isDocumentValid() {
+		return this.isDocumentValid;
+	}
+	
+	public void setIsDocumentValid(boolean isDocumentValid) {
+		this.isDocumentValid = isDocumentValid;
 	}
 	
 }

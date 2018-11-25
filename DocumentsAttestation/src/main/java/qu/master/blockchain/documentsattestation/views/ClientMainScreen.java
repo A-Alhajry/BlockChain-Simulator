@@ -18,9 +18,9 @@ public class ClientMainScreen extends JFrame {
 	private static int height = 1000;
 	
 	SignRequestScreen signRequestScreen = new SignRequestScreen();
-	ViewSignsScreen viewSignsScreen = new ViewSignsScreen();
+	ClientViewSignsScreen viewSignsScreen = new ClientViewSignsScreen();
 	VerifyRequestScreen verifyRequestScreen = new VerifyRequestScreen();
-	ViewVerificationsScreen viewVerScreen = new ViewVerificationsScreen();
+	ClientViewVerificationsScreen viewVerScreen = new ClientViewVerificationsScreen();
 	
 	private CardLayout layout = new CardLayout();
 	
@@ -35,9 +35,9 @@ public class ClientMainScreen extends JFrame {
 		setLayout(layout);
 		
 		signRequestScreen = new SignRequestScreen();
-		viewSignsScreen = new ViewSignsScreen();
+		viewSignsScreen = new ClientViewSignsScreen();
 		verifyRequestScreen = new VerifyRequestScreen();
-		viewVerScreen = new ViewVerificationsScreen();
+		viewVerScreen = new ClientViewVerificationsScreen();
 		
 		JPanel signRequestPanel = new JPanel();
 		JPanel signViewPanel = new JPanel();

@@ -1,18 +1,20 @@
 package qu.master.blockchain.documentsattestation.models.beans;
 
-public class Admin {
+public class Admin extends AbstractUser{
 	
-	private String id;
 	private String publicKey;
 	private Enterprise enterprise;
 	private String fullName;
 	
-	public String getId() {
-		return this.id;
+	public Admin() {
+		super();
 	}
 	
-	public void setId(String id) {
-		this.id = id;
+	public Admin(String id, Enterprise enterprise, String fullName, String publicKey) {
+		super(id);
+		this.publicKey = publicKey;
+		this.enterprise = enterprise;
+		this.fullName = fullName;
 	}
 	
 	public String getPublicKey() {

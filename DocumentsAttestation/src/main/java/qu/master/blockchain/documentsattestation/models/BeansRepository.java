@@ -15,6 +15,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
+import qu.master.blockchain.documentsattestation.Logger;
 import qu.master.blockchain.documentsattestation.models.beans.Client;
 import qu.master.blockchain.documentsattestation.models.beans.Document;
 import qu.master.blockchain.documentsattestation.models.beans.DocumentStatus;
@@ -23,6 +24,7 @@ import qu.master.blockchain.documentsattestation.models.beans.EnterpriseService;
 import qu.master.blockchain.documentsattestation.models.beans.EnterpriseServiceType;
 import qu.master.blockchain.documentsattestation.models.beans.FileRecord;
 import qu.master.blockchain.documentsattestation.models.beans.RequestStatus;
+import qu.master.blockchain.documentsattestation.models.beans.SealedDocument;
 import qu.master.blockchain.documentsattestation.models.beans.SignRequest;
 import qu.master.blockchain.documentsattestation.models.beans.VerifyRequest;
 
@@ -246,46 +248,34 @@ public class BeansRepository {
 	
 	public List<SignRequest> getSignRequestsByClient(String clientId) throws Exception{
 		try (Connection connection = getConnection()) {
-			String sql = " Select sr.*, e.name e_name, s.title s_title, d.title d_title, c.full_name c_name From SignRequest sr  ";
-			sql += " Inner Join Enterprise e On e.id = sr.enterprise_id ";
-			sql += " Inner Join EnterpriseService s On s.id = sr.service_id ";
-			sql += " Inner Join Document d On d.id = sr.document_id ";
-			sql += " Inner Join Client c On c.id = sr.user_id ";
-			sql += " Order By request_time desc ";
+			String sql = getSignRequestQuery(" sr.user_id = ? ");
 			PreparedStatement ps = connection.prepareStatement(sql);
-			//ps.setString(1, clientId);
+			ps.setString(1, clientId);
 			ResultSet rs = ps.executeQuery();
 			List<SignRequest> result = new ArrayList<>();
 			
 			while (rs.next()) {
-
-				SignRequest req = new SignRequest();
-				req.setId(rs.getString("id"));
-				req.setUserId(rs.getString("user_id"));
-				req.setEnterpriseId(rs.getString("enterprise_id"));
-				req.setServiceId(rs.getString("service_id"));
-				req.setDocumentId(rs.getString("document_id"));
-				req.setRequestTime(LocalDateTime.ofInstant(Instant.ofEpochSecond(rs.getInt("request_time")), getLocalOffset()));
-				//req.setRequestTime(rs.getTimestamp("request_time").toLocalDateTime());
-				req.setComments(rs.getString("comments"));
-				req.setStatus(RequestStatus.getStatusById(rs.getInt("status")));
-				req.setContractAddress(rs.getString("contract_address"));
-				
-				String enterpriseName = rs.getString("e_name");
-				String serviceName = rs.getString("s_title");
-				String documentTitle = rs.getString("d_title");
-				String clientName = rs.getString("c_name");
-				
-				req.setClient(new Client(clientId, clientName, null));
-				req.setEnterprise(new Enterprise(req.getEnterpriseId(), enterpriseName, null));
-				req.setService(new EnterpriseService(req.getServiceId(), serviceName, null, null));
-				req.setDocument(new Document(req.getDocumentId(), documentTitle));
-				
-				result.add(req);
-				
+				result.add(readSignRequest(rs));
 			}
 			
 			return result;
+		}
+	}
+	
+	public List<SignRequest> getSignRequestsByEnterprise(String enterpriseId) throws Exception {
+		
+		try (Connection connection = getConnection()) {
+			String sql = getSignRequestQuery("sr.enterprise_id = ? ");
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.setString(1, enterpriseId);
+			ResultSet rs = ps.executeQuery();
+			List<SignRequest> result = new ArrayList<SignRequest>();
+			while (rs.next()) {
+				result.add(readSignRequest(rs));
+			}
+			
+			return result;
+			
 		}
 	}
 	
@@ -311,6 +301,125 @@ public class BeansRepository {
 			
 			return result;
 		}
+	}
+	
+	public boolean addSealedDocuments(List<SealedDocument> sealedDocuments) throws Exception{
+		
+		try (Connection connection = getConnection()) {
+			String sql = "Insert Into SealedDocument(id, document_id, document_location, party_id, party_type, secret_key) Values(?, ?, ?, ?, ?, ?); ";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			
+			for(SealedDocument doc : sealedDocuments) {
+				ps.setString(1, doc.getId());
+				ps.setString(2, doc.getDocumentId());
+				ps.setString(3, doc.getDocumentLocation());
+				ps.setString(4, doc.getPartyId());
+				ps.setString(5, doc.getPartyType());
+				ps.setString(6, doc.getSecretKey());
+				ps.addBatch();
+				
+				Logger.log("Secret Key From DataBase Before Inserting = " + doc.getSecretKey());
+			}
+	
+			return ps.executeBatch().length > 0;
+			
+		}
+	}
+	
+	public List<SealedDocument> getSealedDocuments(String partyId, String documentId) throws Exception {
+		try (Connection connection = getConnection()) {
+			String sql = " Select * From SealedDocument ";
+			
+			if (partyId != null || documentId != null) {
+				sql += " Where ";
+				if (partyId != null) {
+					sql += " party_id = ? ";
+				}
+				
+				else {
+					sql += " party_id Is Not Null ";
+				}
+				
+				if (documentId != null) {
+					sql += " And document_id = ?";
+				}
+				
+				else {
+					sql += " And document_id Is Not Null ";
+				}
+			}
+			
+			PreparedStatement ps = connection.prepareStatement(sql);
+			
+			if (partyId != null || documentId != null) {
+				int paramIndex = 1;
+				if (partyId != null) {
+					ps.setString(paramIndex++, partyId);
+				}
+				
+				if (documentId != null) {
+					ps.setString(paramIndex++, documentId);
+				}
+			}
+			ResultSet rs = ps.executeQuery();
+			List<SealedDocument> result = new ArrayList<SealedDocument>();
+			
+			while(rs.next()) {
+				result.add(readSealedDocument(rs));
+			}
+			
+			return result;
+		}
+	}
+	
+	private SealedDocument readSealedDocument(ResultSet rs) throws Exception {
+		String id  = rs.getString("id");
+		String documentId = rs.getString("document_id");
+		String documentLocation = rs.getString("document_location");
+		String partyId = rs.getString("party_id");
+		String partyType = rs.getString("party_type");
+		String secretKey = rs.getString("secret_key");
+		Logger.log("Secret Key From DataBase After getting = " + secretKey);
+		
+		return new SealedDocument(id, documentId, documentLocation, partyId, partyType, secretKey);
+		
+	}
+	
+	private String getSignRequestQuery(String whereClause) {
+		String sql = " Select sr.*, e.name e_name, s.title s_title, d.title d_title, c.full_name c_name From SignRequest sr  ";
+		sql += " Inner Join Enterprise e On e.id = sr.enterprise_id ";
+		sql += " Inner Join EnterpriseService s On s.id = sr.service_id ";
+		sql += " Inner Join Document d On d.id = sr.document_id ";
+		sql += " Inner Join Client c On c.id = sr.user_id ";
+		sql += " Where " + whereClause;
+		sql += " Order By request_time desc ";
+		return sql;
+	}
+	private SignRequest readSignRequest(ResultSet rs) throws Exception {
+		
+		SignRequest req = new SignRequest();
+		req.setId(rs.getString("id"));
+		req.setUserId(rs.getString("user_id"));
+		req.setEnterpriseId(rs.getString("enterprise_id"));
+		req.setServiceId(rs.getString("service_id"));
+		req.setDocumentId(rs.getString("document_id"));
+		req.setRequestTime(LocalDateTime.ofInstant(Instant.ofEpochSecond(rs.getInt("request_time")), getLocalOffset()));
+		//req.setRequestTime(rs.getTimestamp("request_time").toLocalDateTime());
+		req.setComments(rs.getString("comments"));
+		req.setStatus(RequestStatus.getStatusById(rs.getInt("status")));
+		req.setContractAddress(rs.getString("contract_address"));
+		
+		String enterpriseName = rs.getString("e_name");
+		String serviceName = rs.getString("s_title");
+		String documentTitle = rs.getString("d_title");
+		String clientName = rs.getString("c_name");
+		
+		req.setClient(new Client(req.getUserId(), clientName, null));
+		req.setEnterprise(new Enterprise(req.getEnterpriseId(), enterpriseName, null));
+		req.setService(new EnterpriseService(req.getServiceId(), serviceName, null, null));
+		req.setDocument(new Document(req.getDocumentId(), documentTitle));
+		
+		return req;
 	}
 	
 	private static Connection getConnection() throws Exception{

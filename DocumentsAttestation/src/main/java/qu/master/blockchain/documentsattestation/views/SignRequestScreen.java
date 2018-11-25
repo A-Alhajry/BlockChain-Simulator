@@ -14,11 +14,13 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import qu.master.blockchain.documentsattestation.controllers.ApplicationController;
@@ -41,7 +43,7 @@ public class SignRequestScreen extends AbstractScreen {
 	private JFileChooser fileDialog;
 	private JTextField fileInput;
 	private JTextArea commentsInput;
-	private JButton fileButton, signButton;
+	private JButton fileButton, submitButton;
 	
 	
 	Font font, headerFont;
@@ -73,7 +75,7 @@ public class SignRequestScreen extends AbstractScreen {
 			commentsInput = new JTextArea(cols, rows * 5);
 			
 			fileButton = new JButton("Upload");
-			signButton = new JButton("Submit");
+			submitButton = new JButton("Submit");
 			
 			font = new Font(enterpriseLabel.getFont().getName(), enterpriseLabel.getFont().getStyle(), fontSize);
 			headerFont = new Font(enterpriseLabel.getFont().getName(), Font.BOLD, fontSize * 2);
@@ -156,9 +158,9 @@ public class SignRequestScreen extends AbstractScreen {
 		
 		JPanel submitPanel = new JPanel();
 		submitPanel.setLayout(new GridBagLayout());
-		signButton.setPreferredSize(buttonSize);
-		signButton.setMinimumSize(buttonSize);
-		submitPanel.add(signButton);
+		submitButton.setPreferredSize(buttonSize);
+		submitButton.setMinimumSize(buttonSize);
+		submitPanel.add(submitButton);
 		
 		//setBorder(BorderFactory.createLineBorder(Color.RED, 2));
 		setLayout(new GridBagLayout());
@@ -224,7 +226,7 @@ public class SignRequestScreen extends AbstractScreen {
 			}
 		});
 		
-		signButton.addActionListener(new ActionListener() {
+		submitButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -248,7 +250,8 @@ public class SignRequestScreen extends AbstractScreen {
 						return;
 					}
 					
-					String password = JOptionPane.showInputDialog(SignRequestScreen.this, "Please Enter Your Password");
+					//String password = JOptionPane.showInputDialog(SignRequestScreen.this, "Please Enter Your Password");
+					String password = "mypassword";
 
 					controller.createSignRequest(password, selectedEnterprise.getId(), selectedService.getId(), filePath.getAbsolutePath(), comments);
 					SignRequestScreen.this.showDialog("Success", "Request Successfully Submitted", JOptionPane.INFORMATION_MESSAGE);
