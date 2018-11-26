@@ -19,9 +19,11 @@ public class Document {
 		
 	}
 	
-	public Document(String id, String title) {
+	public Document(String id, String title, String hash, String userSign) {
 		this.id = id;
 		this.title = title;
+		this.hash = hash;
+		this.userSign = userSign;
 	}
 	
 	public String getId() {

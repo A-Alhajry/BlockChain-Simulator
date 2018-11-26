@@ -2,6 +2,8 @@ package qu.master.blockchain.documentsattestation.models.beans;
 
 import java.time.LocalDateTime;
 
+import qu.master.blockchain.documentsattestation.smartcontracts.CertificationFromContract;
+
 public class SignRequest {
 	
 	private String id;
@@ -18,7 +20,7 @@ public class SignRequest {
 	private DocumentStatus documentStatus;
 	private Enterprise enterprise;
 	private EnterpriseService service;
-	private boolean isDocumentValid;
+	private Boolean isDocumentValid;
 	
 	public String getId() {
 		return this.id;
@@ -131,12 +133,24 @@ public class SignRequest {
 		return this.service;
 	}
 	
-	public boolean isDocumentValid() {
+	public Boolean isDocumentValid() {
 		return this.isDocumentValid;
 	}
 	
-	public void setIsDocumentValid(boolean isDocumentValid) {
+	public void setIsDocumentValid(Boolean isDocumentValid) {
 		this.isDocumentValid = isDocumentValid;
+	}
+	
+	public void setValidity(CertificationFromContract cert) {
+		System.out.println("Cert Hash = " + cert.DigitalSign);
+		System.out.println("Doc Hash = " + this.getDocument().getUserSign());
+		if (cert.DocumentHash.equals(this.getDocument().getHash())) {
+			this.isDocumentValid = true;
+		}
+		
+		else {
+			this.isDocumentValid = false;
+		}
 	}
 	
 }

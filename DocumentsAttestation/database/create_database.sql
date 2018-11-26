@@ -63,7 +63,7 @@ Create Table If Not Exists DocumentSignature (
   id varchar,
   sign varchar,
   enterprise_id varchar,
-  timestamp datetime
+  timestamp integer
 );
 
 Create Table If Not Exists DocumentStatusType (

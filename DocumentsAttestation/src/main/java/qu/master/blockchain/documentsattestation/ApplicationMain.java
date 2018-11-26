@@ -25,13 +25,13 @@ public class ApplicationMain {
 		
 		try {
 			AppUtils.emptyDirectory("Temp");
-    		//UsersManager.setCurrentUserId(AppUtils.getCurrentClient().getId());
-			//ViewsManager.showClientScreen();
+    		UsersManager.setCurrentUserId(AppUtils.getCurrentClient().getId());
+			ViewsManager.showClientScreen();
         	//BeansRepository.createDatabase();
 			BeansRepository repo = new BeansRepository();
 			List<Enterprise> enterprises = repo.getEnterprisesList();
-			UsersManager.setCurrentUserId(enterprises.get(0).getId());
-			ViewsManager.showAdminScreen();
+			//UsersManager.setCurrentUserId(enterprises.get(0).getId());
+			//ViewsManager.showAdminScreen();
     		//CryptoModel.generateKeyPair("mypassword", AppUtils.getCurrentClient().getId());
     		//ViewsManager.showClientScreen();
 //			for(Enterprise p : repo.getEnterprisesList()) {

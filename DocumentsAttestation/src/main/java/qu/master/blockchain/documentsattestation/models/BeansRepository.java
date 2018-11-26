@@ -18,6 +18,7 @@ import java.util.List;
 import qu.master.blockchain.documentsattestation.Logger;
 import qu.master.blockchain.documentsattestation.models.beans.Client;
 import qu.master.blockchain.documentsattestation.models.beans.Document;
+import qu.master.blockchain.documentsattestation.models.beans.DocumentSignature;
 import qu.master.blockchain.documentsattestation.models.beans.DocumentStatus;
 import qu.master.blockchain.documentsattestation.models.beans.Enterprise;
 import qu.master.blockchain.documentsattestation.models.beans.EnterpriseService;
@@ -230,8 +231,9 @@ public class BeansRepository {
 		try (Connection connection = getConnection()) {
 			String sql = " Update SignRequest Set status = ? Where id = ? ";
 			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setString(1, newStatus.getName());
+			ps.setInt(1, newStatus.getId());
 			ps.setString(2, requestId);
+			System.out.println(" req id = before update = " + requestId);
 			return ps.execute();
 		}
 	}
@@ -328,10 +330,11 @@ public class BeansRepository {
 	
 	public List<SealedDocument> getSealedDocuments(String partyId, String documentId) throws Exception {
 		try (Connection connection = getConnection()) {
-			String sql = " Select * From SealedDocument ";
+			String sql = " Select sd.*, d.title From SealedDocument sd ";
+			sql += " Inner Join Document d On d.id = sd.document_id ";
 			
 			if (partyId != null || documentId != null) {
-				sql += " Where ";
+				sql += " And ";
 				if (partyId != null) {
 					sql += " party_id = ? ";
 				}
@@ -372,6 +375,19 @@ public class BeansRepository {
 		}
 	}
 	
+	public boolean addDocumentSignature(DocumentSignature sign) throws Exception{
+		try (Connection connection = getConnection()) {
+			String sql = " Insert Into DocumentSignature (id, sign, enterprise_id, timestamp) Values(?, ?, ?, ?); ";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.setString(1, sign.getId());
+			ps.setString(2, sign.getSign());
+			ps.setLong(3, sign.getTimestamp().toEpochSecond(getLocalOffset()));
+			ps.setString(4, sign.getEnterprise().getId());
+			return ps.execute();
+			
+		}
+	}
+	
 	private SealedDocument readSealedDocument(ResultSet rs) throws Exception {
 		String id  = rs.getString("id");
 		String documentId = rs.getString("document_id");
@@ -379,14 +395,15 @@ public class BeansRepository {
 		String partyId = rs.getString("party_id");
 		String partyType = rs.getString("party_type");
 		String secretKey = rs.getString("secret_key");
+		String documentTitle = rs.getString("title");
 		Logger.log("Secret Key From DataBase After getting = " + secretKey);
 		
-		return new SealedDocument(id, documentId, documentLocation, partyId, partyType, secretKey);
+		return new SealedDocument(id, documentId, documentTitle, documentLocation, partyId, partyType, secretKey);
 		
 	}
 	
 	private String getSignRequestQuery(String whereClause) {
-		String sql = " Select sr.*, e.name e_name, s.title s_title, d.title d_title, c.full_name c_name From SignRequest sr  ";
+		String sql = " Select sr.*, e.name e_name, s.title s_title, d.title d_title, d.hash d_hash, d.user_sign d_sign, c.full_name c_name From SignRequest sr  ";
 		sql += " Inner Join Enterprise e On e.id = sr.enterprise_id ";
 		sql += " Inner Join EnterpriseService s On s.id = sr.service_id ";
 		sql += " Inner Join Document d On d.id = sr.document_id ";
@@ -414,10 +431,15 @@ public class BeansRepository {
 		String documentTitle = rs.getString("d_title");
 		String clientName = rs.getString("c_name");
 		
+		String docHash = rs.getString("d_hash");
+		String sign = rs.getString("d_sign");
+		
 		req.setClient(new Client(req.getUserId(), clientName, null));
 		req.setEnterprise(new Enterprise(req.getEnterpriseId(), enterpriseName, null));
 		req.setService(new EnterpriseService(req.getServiceId(), serviceName, null, null));
-		req.setDocument(new Document(req.getDocumentId(), documentTitle));
+		req.setDocument(new Document(req.getDocumentId(), documentTitle, docHash, sign));
+		
+		System.out.println("req id = after get " + req.getId());
 		
 		return req;
 	}

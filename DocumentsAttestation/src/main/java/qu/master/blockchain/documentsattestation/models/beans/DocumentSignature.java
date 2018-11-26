@@ -4,9 +4,25 @@ import java.time.LocalDateTime;
 
 public class DocumentSignature {
 	
+	private String id;
 	private String sign;
 	private Enterprise enterprise;
 	private LocalDateTime timestamp;
+	
+	public DocumentSignature(String id, String sign, Enterprise enterprise, LocalDateTime timestamp) {
+		this.id = id;
+		this.sign = sign;
+		this.enterprise = enterprise;
+		this.timestamp = timestamp;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setId(String id) {
+		this.id = id;
+	}
 	
 	public String getSign() {
 		return this.sign;
