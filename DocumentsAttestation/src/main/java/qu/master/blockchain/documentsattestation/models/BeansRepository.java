@@ -34,9 +34,11 @@ public class BeansRepository {
 	private static String databaseUrl = "jdbc:sqlite:database" + File.separator + "app.db";
 	private static String createScript = "database" + File.separator + "create_database.sql";
 	
+	private Connection connection;
+	
 	public static void createDatabase() throws Exception {
 		
-		try (Connection connection = getConnection()) {
+		try (Connection connection = getConnectionAsStatic()) {
 			
 			//System.out.println("New Database has been created ! ");
 			//createTables(connection);
@@ -77,9 +79,10 @@ public class BeansRepository {
 			while(rs.next()) {
 				String id = rs.getString("id");
 				String name = rs.getString("name");
+				String shortName = rs.getString("short_name");
 				String publicKey = rs.getString("public_key");
 								
-				enterprises.add(new Enterprise(id, name, publicKey));
+				enterprises.add(new Enterprise(id, name, shortName, publicKey));
 			}
 		}
 		
@@ -308,7 +311,7 @@ public class BeansRepository {
 	public boolean addSealedDocuments(List<SealedDocument> sealedDocuments) throws Exception{
 		
 		try (Connection connection = getConnection()) {
-			String sql = "Insert Into SealedDocument(id, document_id, document_location, party_id, party_type, secret_key) Values(?, ?, ?, ?, ?, ?); ";
+			String sql = "Insert Into SealedDocument(id, document_id, document_location, party_id, party_type, secret_key, timestamp) Values(?, ?, ?, ?, ?, ?, ?) ; ";
 			PreparedStatement ps = connection.prepareStatement(sql);
 			
 			for(SealedDocument doc : sealedDocuments) {
@@ -318,6 +321,7 @@ public class BeansRepository {
 				ps.setString(4, doc.getPartyId());
 				ps.setString(5, doc.getPartyType());
 				ps.setString(6, doc.getSecretKey());
+				ps.setLong(7, doc.getTimestamp().toEpochSecond(getLocalOffset()));
 				ps.addBatch();
 				
 				Logger.log("Secret Key From DataBase Before Inserting = " + doc.getSecretKey());
@@ -375,14 +379,15 @@ public class BeansRepository {
 		}
 	}
 	
-	public boolean addDocumentSignature(DocumentSignature sign) throws Exception{
+	public boolean addDocumentSignature(DocumentSignature sign, String documentId) throws Exception{
 		try (Connection connection = getConnection()) {
-			String sql = " Insert Into DocumentSignature (id, sign, enterprise_id, timestamp) Values(?, ?, ?, ?); ";
+			String sql = " Insert Into DocumentSignature (id, sign, timestamp, enterprise_id, document_id) Values(?, ?, ?, ?, ?); ";
 			PreparedStatement ps = connection.prepareStatement(sql);
 			ps.setString(1, sign.getId());
 			ps.setString(2, sign.getSign());
 			ps.setLong(3, sign.getTimestamp().toEpochSecond(getLocalOffset()));
 			ps.setString(4, sign.getEnterprise().getId());
+			ps.setString(5, documentId);
 			return ps.execute();
 			
 		}
@@ -396,14 +401,15 @@ public class BeansRepository {
 		String partyType = rs.getString("party_type");
 		String secretKey = rs.getString("secret_key");
 		String documentTitle = rs.getString("title");
+		LocalDateTime timestamp = LocalDateTime.ofInstant(Instant.ofEpochSecond(rs.getLong("timestamp")), getLocalOffset());
 		Logger.log("Secret Key From DataBase After getting = " + secretKey);
 		
-		return new SealedDocument(id, documentId, documentTitle, documentLocation, partyId, partyType, secretKey);
+		return new SealedDocument(id, documentId, documentTitle, documentLocation, partyId, partyType, secretKey, timestamp);
 		
 	}
 	
 	private String getSignRequestQuery(String whereClause) {
-		String sql = " Select sr.*, e.name e_name, s.title s_title, d.title d_title, d.hash d_hash, d.user_sign d_sign, c.full_name c_name From SignRequest sr  ";
+		String sql = " Select sr.*, e.name e_name, e.short_name e_short_name, s.title s_title, d.title d_title, d.hash d_hash, d.user_sign d_sign, c.full_name c_name From SignRequest sr  ";
 		sql += " Inner Join Enterprise e On e.id = sr.enterprise_id ";
 		sql += " Inner Join EnterpriseService s On s.id = sr.service_id ";
 		sql += " Inner Join Document d On d.id = sr.document_id ";
@@ -427,6 +433,7 @@ public class BeansRepository {
 		req.setContractAddress(rs.getString("contract_address"));
 		
 		String enterpriseName = rs.getString("e_name");
+		String enterpriseShortName = rs.getString("e_short_name");
 		String serviceName = rs.getString("s_title");
 		String documentTitle = rs.getString("d_title");
 		String clientName = rs.getString("c_name");
@@ -435,16 +442,56 @@ public class BeansRepository {
 		String sign = rs.getString("d_sign");
 		
 		req.setClient(new Client(req.getUserId(), clientName, null));
-		req.setEnterprise(new Enterprise(req.getEnterpriseId(), enterpriseName, null));
+		req.setEnterprise(new Enterprise(req.getEnterpriseId(), enterpriseName, enterpriseShortName, null));
 		req.setService(new EnterpriseService(req.getServiceId(), serviceName, null, null));
-		req.setDocument(new Document(req.getDocumentId(), documentTitle, docHash, sign));
 		
+		Document document = new Document(req.getDocumentId(), documentTitle, docHash, sign);
+		document.setSignHistory(getDocumentSignatures(req.getDocumentId()));
+		req.setDocument(document);
+
 		System.out.println("req id = after get " + req.getId());
 		
 		return req;
 	}
 	
-	private static Connection getConnection() throws Exception{
+	public List<DocumentSignature> getDocumentSignatures(String documentId) throws Exception{
+		try(Connection connection = getConnection()) {
+			String sql = " Select ds.*, e.name, e.short_name, e.public_key From DocumentSignature ds ";
+			sql += " Inner Join Enterprise e On e.id = ds.enterprise_id ";
+			sql += " Where ds.document_id = ? ";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.setString(1, documentId);
+			List<DocumentSignature> result = new ArrayList<DocumentSignature>();
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				String id = rs.getString("id");
+				String sign = rs.getString("sign");
+				String enterpriseId = rs.getString("enterprise_id");
+				LocalDateTime timestamp = LocalDateTime.ofInstant(Instant.ofEpochSecond(rs.getLong("timestamp")), getLocalOffset());
+				String enterpriseName = rs.getString("name");
+				String enterpriseShortName = rs.getString("short_name");
+				String publicKey = rs.getString("public_key");
+				
+				Enterprise enterprise = new Enterprise(enterpriseId, enterpriseName, enterpriseShortName, publicKey);
+				
+				result.add(new DocumentSignature(id, sign, enterprise, timestamp));
+				
+			}
+			
+			return result;
+			
+		}
+	}
+	
+	private Connection getConnection() throws Exception{
+		
+//		if (this.connection == null || this.connection.isClosed()) {
+//			this.connection = DriverManager.getConnection(databaseUrl);
+//		}
+		return DriverManager.getConnection(databaseUrl);
+	}
+	private static Connection getConnectionAsStatic() throws Exception{
 		return DriverManager.getConnection(databaseUrl);
 	}
 	

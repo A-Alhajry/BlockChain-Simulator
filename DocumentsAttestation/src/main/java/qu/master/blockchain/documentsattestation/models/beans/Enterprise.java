@@ -4,15 +4,17 @@ public class Enterprise {
 	
 	private String id;
 	private String name;
+	private String shortName;
 	private String publicKey;
 	
 	public Enterprise() {
 		
 	}
 	
-	public Enterprise(String id, String name, String publicKey) {
+	public Enterprise(String id, String name, String shortName, String publicKey) {
 		this.id = id;
 		this.name = name;
+		this.shortName = shortName;
 		this.publicKey = publicKey;
 	}
 	
@@ -30,6 +32,14 @@ public class Enterprise {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getShortName() {
+		return this.shortName;
+	}
+	
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
 	}
 	
 	public String getPublicKey() {

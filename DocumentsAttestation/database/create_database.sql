@@ -28,6 +28,8 @@ Drop Table If Exists FileRecordType;
 
 Drop Table If Exists FileRecord;
 
+Drop Table If Exists SealedDocument;
+
 
 Create Table If Not Exists Client (
   id varchar,
@@ -40,6 +42,7 @@ Create Table If Not Exists Client (
 Create Table If Not Exists Enterprise (
   id varchar,
   name varchar,
+  short_name varchar,
   public_key varchar
 );
 
@@ -63,6 +66,7 @@ Create Table If Not Exists DocumentSignature (
   id varchar,
   sign varchar,
   enterprise_id varchar,
+  document_id varchar,
   timestamp integer
 );
 
@@ -146,7 +150,8 @@ Create Table If Not Exists SealedDocument (
   document_location varchar,
   party_id varchar,
   party_type varchar,
-  secret_key varchar
+  secret_key varchar,
+  timestamp integer
 );
 
 Delete From Client;
@@ -158,9 +163,9 @@ Delete From EnterpriseServiceType;
 
 Insert Into Client(id, full_name, public_key, username, password) Values('6aefdda3-c1c8-4a8e-a5d6-7d314b6a2994', 'Abdulrahman Alkhayarin', '0x5c26cebcc951b5fcb8ce30423bd89e1fa59d3c96', 'aalkhayarin', 'mypassword');
 
-Insert Into Enterprise(id, name, public_key) Values('8bdb2178-8484-4fde-a4b1-d2e7fcacb771', 'Qatar University', '0x3e173db2f7eeb59894fc9c969c85334abfc170ae');
-Insert Into Enterprise(id, name, public_key) Values('16f1fd8b-b80b-43e4-9e27-9aa78b7f6a5f', 'Hamad Medical Corporation', '0x28c2add8276941044e1f112afa72c2b44ce1894a');
-Insert Into Enterprise(id, name, public_key) Values('3771af1f-28d2-4734-952e-71031f15cc9d', 'Ministry Of Interior', '0xf9448908e474bcf95bb7e681a6a7058bab5e7750');
+Insert Into Enterprise(id, name, short_name, public_key) Values('8bdb2178-8484-4fde-a4b1-d2e7fcacb771', 'Qatar University', 'QU', '0x3e173db2f7eeb59894fc9c969c85334abfc170ae');
+Insert Into Enterprise(id, name, short_name, public_key) Values('16f1fd8b-b80b-43e4-9e27-9aa78b7f6a5f', 'Hamad Medical Corporation', 'HMC', '0x28c2add8276941044e1f112afa72c2b44ce1894a');
+Insert Into Enterprise(id, name, short_name, public_key) Values('3771af1f-28d2-4734-952e-71031f15cc9d', 'Ministry Of Interior', 'MOI', '0xf9448908e474bcf95bb7e681a6a7058bab5e7750');
 
 Insert Into EnterpriseServiceType(id, name) Values(1, 'Sign Service');
 Insert Into EnterpriseServiceType(id, name) Values(2, 'Verify Service');
