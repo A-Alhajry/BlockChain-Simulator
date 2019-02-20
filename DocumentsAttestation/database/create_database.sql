@@ -119,9 +119,12 @@ Create Table If Not Exists VerifyRequest (
   id varchar,
   user_id varchar,
   enterprise_id varchar,
+  service_id varchar,
   request_time integer,
   contract_address varchar,
+  document_id varchar,
   document_sign_id varchar,
+  document_location varchar,
   status integer
 );
 
@@ -164,8 +167,8 @@ Delete From EnterpriseServiceType;
 Insert Into Client(id, full_name, public_key, username, password) Values('6aefdda3-c1c8-4a8e-a5d6-7d314b6a2994', 'Abdulrahman Alkhayarin', '0x5c26cebcc951b5fcb8ce30423bd89e1fa59d3c96', 'aalkhayarin', 'mypassword');
 
 Insert Into Enterprise(id, name, short_name, public_key) Values('8bdb2178-8484-4fde-a4b1-d2e7fcacb771', 'Qatar University', 'QU', '0x3e173db2f7eeb59894fc9c969c85334abfc170ae');
-Insert Into Enterprise(id, name, short_name, public_key) Values('16f1fd8b-b80b-43e4-9e27-9aa78b7f6a5f', 'Hamad Medical Corporation', 'HMC', '0x28c2add8276941044e1f112afa72c2b44ce1894a');
-Insert Into Enterprise(id, name, short_name, public_key) Values('3771af1f-28d2-4734-952e-71031f15cc9d', 'Ministry Of Interior', 'MOI', '0xf9448908e474bcf95bb7e681a6a7058bab5e7750');
+Insert Into Enterprise(id, name, short_name, public_key) Values('16f1fd8b-b80b-43e4-9e27-9aa78b7f6a5f', 'Ministry Of Foreign Affairs', 'MOFA', '0x28c2add8276941044e1f112afa72c2b44ce1894a');
+Insert Into Enterprise(id, name, short_name, public_key) Values('3771af1f-28d2-4734-952e-71031f15cc9d', 'Embassy Of Qatar In London', 'Emb_QA_London', '0xf9448908e474bcf95bb7e681a6a7058bab5e7750');
 
 Insert Into EnterpriseServiceType(id, name) Values(1, 'Sign Service');
 Insert Into EnterpriseServiceType(id, name) Values(2, 'Verify Service');
@@ -174,10 +177,16 @@ Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported
 Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('e44bcd93-d10f-4a6e-982b-b54bdd2fcf49', '8bdb2178-8484-4fde-a4b1-d2e7fcacb771', 'Academic Transcript', 1,'', 'pdf');
 Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('795c538d-438a-4a22-96f4-2ff440e74364', '8bdb2178-8484-4fde-a4b1-d2e7fcacb771', 'Degree Evaluation', 1,'', 'pdf');
 
-Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('a89f08dc-dbc1-48b6-94ac-a41e62298fbe', '16f1fd8b-b80b-43e4-9e27-9aa78b7f6a5f', 'Birth Certificate', 1,'', 'pdf');
-Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('e122ddeb-e086-4d9e-b2e4-c41847ca9c6f', '16f1fd8b-b80b-43e4-9e27-9aa78b7f6a5f', 'Job Certificate', 1,'', 'pdf');
+Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('a89f08dc-dbc1-48b6-94ac-a41e62298fbe', '16f1fd8b-b80b-43e4-9e27-9aa78b7f6a5f', 'Graduation Statement', 1,'', 'pdf');
+Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('e122ddeb-e086-4d9e-b2e4-c41847ca9c6f', '16f1fd8b-b80b-43e4-9e27-9aa78b7f6a5f', 'Wedding Certificate', 1,'', 'pdf');
 
-Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('ffc156fe-7fc1-4f51-8e22-63dd67a9c98a', '3771af1f-28d2-4734-952e-71031f15cc9d', 'Certificate Of Good Conduct', 1, '', 'pdf');
+Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('81ca9648-9c27-42f0-bb20-08071e05041f', '4c21151c-c54a-4e7d-b40b-603e6cdad11f', 'Birth Certificate', 1,'', 'pdf');
+Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('a1e1aa0f-26cb-44e2-961b-90a2b9693378', '4c21151c-c54a-4e7d-b40b-603e6cdad11f', 'Job Certificate', 1,'', 'pdf');
+
+Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('daf885ba-db4f-4428-b782-39bd2be60b7e', '1c5d9310-727a-4710-bcac-10dbacf83ac0', 'Certificate Of Good Conduct', 1, '', 'pdf');
+
+-----------------------
+-----------------------
 
 
 Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('9fd907fd-70d0-42d9-b6bb-b14cfe6ebd9b', '8bdb2178-8484-4fde-a4b1-d2e7fcacb771', 'Graduation Statement', 2, '', 'pdf');
@@ -188,6 +197,9 @@ Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported
 Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('3fde54e6-e1c0-471f-b6cc-c9ed362297fd', '16f1fd8b-b80b-43e4-9e27-9aa78b7f6a5f', 'Job Certificate', 2, '', 'pdf');
 
 Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('7c62797c-1a42-4842-b130-ac87f6bea81f', '3771af1f-28d2-4734-952e-71031f15cc9d', 'Certificate Of Good Conduct', 2, '', 'pdf');
+
+Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('56f67c66-81ff-44b8-8d07-8ea2f547dc27', '3771af1f-28d2-4734-952e-71031f15cc9d', 'Graduation Statement', 2, '', 'pdf');
+Insert Into EnterpriseService(id, enterprise_id, title, type_id, desc, supported_files) Values('acf466bb-0dab-4fd9-bef1-083a6ba723d6', '3771af1f-28d2-4734-952e-71031f15cc9d', 'Wedding Certificate', 2, '', 'pdf');
 
 Insert Into DocumentStatusType(id, name) Values(1, 'Created');
 Insert Into DocumentStatusType(id, name) Values(2, 'Sent To Sign');

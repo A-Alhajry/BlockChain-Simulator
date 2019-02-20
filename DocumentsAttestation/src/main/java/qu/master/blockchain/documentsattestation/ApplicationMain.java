@@ -24,18 +24,31 @@ public class ApplicationMain {
 		
 		
 		try {
-			AppUtils.emptyDirectory("Temp");
-    		UsersManager.setCurrentUserId(AppUtils.getCurrentClient().getId());
-			ViewsManager.showClientScreen();
-        	//BeansRepository.createDatabase();
+			//BeansRepository.createDatabase();
 			BeansRepository repo = new BeansRepository();
 			List<Enterprise> enterprises = repo.getEnterprisesList();
-			//UsersManager.setCurrentUserId(enterprises.get(0).getId());
-			//ViewsManager.showAdminScreen();
+
+			if (args == null ||args.length == 0 || args[0].equals("C")) {
+				UsersManager.setCurrentUserId(AppUtils.getCurrentClient().getId());
+				UsersManager.setCurrentClient(AppUtils.getCurrentClient());
+				ViewsManager.showClientScreen();
+			}
+			
+			else {
+				Enterprise enterprise = enterprises.get(Integer.parseInt(args[1]) - 1);
+				UsersManager.setCurrentUserId(enterprise.getId());
+				UsersManager.setCurrentEnterprise(enterprise);
+		        ViewsManager.showAdminScreen(enterprise.getName());
+			}
+			AppUtils.emptyDirectory("Temp");
+    		
+        	
+			System.out.println(AppUtils.getRandomId());
+			
     		//CryptoModel.generateKeyPair("mypassword", AppUtils.getCurrentClient().getId());
     		//ViewsManager.showClientScreen();
-//			for(Enterprise p : repo.getEnterprisesList()) {
-//				//CryptoModel.generateKeyPair("mypassword", p.getId());
+//	        for(Enterprise p : repo.getEnterprisesList().subList(3, 5)) {
+//				CryptoModel.generateKeyPair("mypassword", p.getId());
 //			}
 			
 //			SealedDocument doc = repo.getSealedDocuments(enterprises.get(0).getId(), "0acfa6f5-5bee-43ba-8e23-dd2af1d3b9b8").get(0);

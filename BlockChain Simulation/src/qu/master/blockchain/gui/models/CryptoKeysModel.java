@@ -30,12 +30,10 @@ public class CryptoKeysModel {
 	private static final String CryptAlgorithm = "RSA";
 	private static final String SignAlgorithm = "SHA256withRSA";
 	private static final int KeySize = 2084;
-	private static final String SymCryptAlgo = "DES";
 	
 	private static final String publicKeyFile = "public.pub";
 	private static final String privateKeyFile = "private.der";
 	
-	private static final String privateKeyAlgo = "PKCS#8";
 	private static final String pvtKeyEncAlgo = "PBEWithSHA1AndDESede";
 	
 	private static KeyPair keyPair;
@@ -48,7 +46,6 @@ public class CryptoKeysModel {
 			kpg.initialize(KeySize);
 			keyPair =  kpg.generateKeyPair();
 			myKeys = new KeysPair(keyPair);
-			String a = keyPair.getPrivate().getAlgorithm();
 			return myKeys;
 		}
 		
@@ -158,7 +155,6 @@ public class CryptoKeysModel {
 	}
 	
 	private static byte[] readBytes(String path) throws Exception {
-		File inputFile = new File(path);
 		Path filePath = Paths.get(path);
 		return Files.readAllBytes(filePath);
 	}
@@ -166,7 +162,6 @@ public class CryptoKeysModel {
 	private static void writeBytes(byte[] bytes, String path) throws Exception {
 		FileOutputStream fos = null;
 		try {
-			URL uri = CryptoKeysModel.class.getClassLoader().getResource(path);
 			File outputFile = new File(path);
 			fos = new FileOutputStream(outputFile);
 			fos.write(bytes, 0, bytes.length);
@@ -188,27 +183,6 @@ public class CryptoKeysModel {
 		PKCS8EncodedKeySpec ks = new PKCS8EncodedKeySpec(bytes);
 		KeyFactory kf = KeyFactory.getInstance(CryptAlgorithm);
 		return kf.generatePrivate(ks);
-	}
-
-	private static void writeKey2(byte[] bytes, String path) throws Exception {
-		FileOutputStream fos = null;
-		try {
-			File file = new File(CryptoKeysModel.class.getResource(path).toURI());
-			fos = new FileOutputStream(file);
-			fos.write(bytes);
-		}
-		
-		finally {
-			if (fos != null) {
-				fos.close();
-			}
-		}
-	}
-	
-	private static byte[] readKey(String file) throws Exception {
-		
-		Path path = Paths.get(file);
-		return Files.readAllBytes(path);
 	}
 	
 }

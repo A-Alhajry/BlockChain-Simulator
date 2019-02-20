@@ -184,6 +184,43 @@ public class BeansRepository {
 		}
 	}
 	
+	public List<Document> getDocuments(String id) throws Exception {
+		try (Connection connection = getConnection()) {
+			String sql = " Select * From Document ";
+			if (id != null && !id.isEmpty()) {
+				sql += " Where id = ? ";
+			}
+			
+			PreparedStatement ps = connection.prepareStatement(sql);
+			
+			if (id != null && !id.isEmpty()) {
+				ps.setString(1, id);
+			}
+
+			List<Document> documents = new ArrayList<Document>();
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				String userId = rs.getString("owner_id");
+				String title = rs.getString("title");
+				String userSign = rs.getString("user_sign");
+				String hash = rs.getString("hash");
+				//Long creationTime = rs.getLong("creation_time");
+				Document document = new Document();
+				document.setId(id);
+				document.setOwner(new Client(userId, null, null));
+				document.setTitle(title);
+				document.setUserSign(userSign);
+				document.setHash(hash);
+				//document.setCreationTime(LocalDateTime.ofInstant(Instant.ofEpochSecond(creationTime), getLocalOffset()));
+				
+				documents.add(document);
+				
+			}
+			
+			return documents;
+		}
+	}
+	
 	public boolean addDocumentStatus(String documentId, DocumentStatus status) throws Exception {
 		try (Connection connection = getConnection()) {
 			String sql = " Insert Into DocumentStatus(id, timestamp, type_id) Values(?, ?, ?)";
@@ -217,18 +254,21 @@ public class BeansRepository {
 	
 	public boolean addVerifyRequest(VerifyRequest req) throws Exception {
 		try (Connection connection = getConnection()) {
-			String sql = " Insert Into VerifyRequest(id, user_id, enterprise_id, request_time, contract_address, document_sign_id, status) Values(?, ?, ?, ?, ?, ?, ?)";
+			String sql = " Insert Into VerifyRequest(id, user_id, enterprise_id, request_time, contract_address, document_id, status, document_location, service_id) Values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement ps = connection.prepareStatement(sql);
 			ps.setString(1, req.getId());
 			ps.setString(2, req.getUserId());
 			ps.setString(3, req.getEnterpriseId());
 			ps.setLong(4, req.getRequestTime().toEpochSecond(getLocalOffset()));
 			ps.setString(5, req.getContractAddress());
-			ps.setString(6, req.getDocumentSignId());
+			ps.setString(6, req.getDocumentId());
 			ps.setInt(7, req.getStatus().getId());
+			ps.setString(8, req.getDocumentLocation());
+			ps.setString(9, req.getServiceId());
 			return ps.execute();
 		}
 	}
+	
 	public boolean updateSignRequestStatus(String requestId, RequestStatus newStatus) throws Exception {
 		
 		try (Connection connection = getConnection()) {
@@ -241,11 +281,11 @@ public class BeansRepository {
 		}
 	}
 	
-	public boolean updateVerifyRequest(String requestId, RequestStatus newStatus) throws Exception {
+	public boolean updateVerifyRequestStatus(String requestId, RequestStatus newStatus) throws Exception {
 		try (Connection connection = getConnection()) {
 			String sql = " Update VerifyRequest Set status = ? Where id = ? ";
 			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setString(1, newStatus.getName());
+			ps.setInt(1, newStatus.getId());
 			ps.setString(2, requestId);
 			return ps.execute();
 		}
@@ -270,9 +310,10 @@ public class BeansRepository {
 	public List<SignRequest> getSignRequestsByEnterprise(String enterpriseId) throws Exception {
 		
 		try (Connection connection = getConnection()) {
-			String sql = getSignRequestQuery("sr.enterprise_id = ? ");
+			String sql = getSignRequestQuery("sr.enterprise_id = ? And status = ? ");
 			PreparedStatement ps = connection.prepareStatement(sql);
 			ps.setString(1, enterpriseId);
+			ps.setInt(2, RequestStatus.IN_PROGRESS.getId());
 			ResultSet rs = ps.executeQuery();
 			List<SignRequest> result = new ArrayList<SignRequest>();
 			while (rs.next()) {
@@ -287,21 +328,32 @@ public class BeansRepository {
 	public List<VerifyRequest> getVerifyRequestsByClient(String clientId) throws Exception {
 		
 		try(Connection connection = getConnection()){
-			String sql = " Select * From VerifyRequest ";
+			String sql = getVerifyRequestQuery(" vr.user_id = ? ");
 			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.setString(1, clientId);
 			ResultSet rs = ps.executeQuery();
 			List<VerifyRequest> result = new ArrayList<VerifyRequest>();
 			
 			while(rs.next()) {
-				VerifyRequest req = new VerifyRequest();
-				req.setId(rs.getString("id"));
-				req.setUserId(rs.getString("user_id"));
-				req.setEnterpriseId(rs.getString("enterprise_id"));
-				req.setDocumentSignId(rs.getString("document_sign_id"));
-				req.setContractAddress("contract_address");
-				req.setStatus(RequestStatus.getStatusById(rs.getInt("status")));
-				req.setRequestTime(LocalDateTime.ofInstant(Instant.ofEpochSecond(rs.getInt("request_time")), getLocalOffset()));
-				result.add(req);
+				result.add(readVerifyRequest(rs));
+			}
+			
+			return result;
+		}
+	}
+	
+	public List<VerifyRequest> getVerifyRequestsByEnterprise(String enterpriseId) throws Exception {
+		
+		try(Connection connection = getConnection()){
+			String sql = getVerifyRequestQuery(" vr.enterprise_id = ? And vr.status = ? ");
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.setString(1, enterpriseId);
+			ps.setInt(2, RequestStatus.IN_PROGRESS.getId());
+			ResultSet rs = ps.executeQuery();
+			List<VerifyRequest> result = new ArrayList<VerifyRequest>();
+			
+			while(rs.next()) {
+				result.add(readVerifyRequest(rs));
 			}
 			
 			return result;
@@ -324,7 +376,6 @@ public class BeansRepository {
 				ps.setLong(7, doc.getTimestamp().toEpochSecond(getLocalOffset()));
 				ps.addBatch();
 				
-				Logger.log("Secret Key From DataBase Before Inserting = " + doc.getSecretKey());
 			}
 	
 			return ps.executeBatch().length > 0;
@@ -356,6 +407,9 @@ public class BeansRepository {
 				}
 			}
 			
+			sql += " Order By timestamp Desc ";
+
+			
 			PreparedStatement ps = connection.prepareStatement(sql);
 			
 			if (partyId != null || documentId != null) {
@@ -368,6 +422,7 @@ public class BeansRepository {
 					ps.setString(paramIndex++, documentId);
 				}
 			}
+			
 			ResultSet rs = ps.executeQuery();
 			List<SealedDocument> result = new ArrayList<SealedDocument>();
 			
@@ -402,7 +457,6 @@ public class BeansRepository {
 		String secretKey = rs.getString("secret_key");
 		String documentTitle = rs.getString("title");
 		LocalDateTime timestamp = LocalDateTime.ofInstant(Instant.ofEpochSecond(rs.getLong("timestamp")), getLocalOffset());
-		Logger.log("Secret Key From DataBase After getting = " + secretKey);
 		
 		return new SealedDocument(id, documentId, documentTitle, documentLocation, partyId, partyType, secretKey, timestamp);
 		
@@ -418,6 +472,18 @@ public class BeansRepository {
 		sql += " Order By request_time desc ";
 		return sql;
 	}
+	
+	private String getVerifyRequestQuery(String whereClause) {
+		String sql = " Select vr.*, e.name e_name, e.short_name e_short_name, s.title s_title, d.title d_title, d.hash d_hash, d.user_sign d_sign, c.full_name c_name From VerifyRequest vr  ";
+		sql += " Inner Join Enterprise e On e.id = vr.enterprise_id ";
+		sql += " Inner Join EnterpriseService s On s.id = vr.service_id ";
+		sql += " Inner Join Document d On d.id = vr.document_id ";
+		sql += " Inner Join Client c On c.id = vr.user_id ";
+		sql += " Where " + whereClause;
+		sql += " Order By request_time desc ";
+		return sql;
+	}
+	
 	private SignRequest readSignRequest(ResultSet rs) throws Exception {
 		
 		SignRequest req = new SignRequest();
@@ -448,8 +514,39 @@ public class BeansRepository {
 		Document document = new Document(req.getDocumentId(), documentTitle, docHash, sign);
 		document.setSignHistory(getDocumentSignatures(req.getDocumentId()));
 		req.setDocument(document);
-
-		System.out.println("req id = after get " + req.getId());
+		
+		return req;
+	}
+	
+	private VerifyRequest readVerifyRequest(ResultSet rs) throws Exception {
+		
+		VerifyRequest req = new VerifyRequest();
+		req.setId(rs.getString("id"));
+		req.setUserId(rs.getString("user_id"));
+		req.setEnterpriseId(rs.getString("enterprise_id"));
+		req.setServiceId(rs.getString("service_id"));
+		req.setDocumentId(rs.getString("document_id"));
+		req.setRequestTime(LocalDateTime.ofInstant(Instant.ofEpochSecond(rs.getInt("request_time")), getLocalOffset()));
+		//req.setRequestTime(rs.getTimestamp("request_time").toLocalDateTime());
+		req.setStatus(RequestStatus.getStatusById(rs.getInt("status")));
+		req.setContractAddress(rs.getString("contract_address"));
+		
+		String enterpriseName = rs.getString("e_name");
+		String enterpriseShortName = rs.getString("e_short_name");
+		String serviceName = rs.getString("s_title");
+		String documentTitle = rs.getString("d_title");
+		String clientName = rs.getString("c_name");
+		
+		String docHash = rs.getString("d_hash");
+		String sign = rs.getString("d_sign");
+		
+		req.setClient(new Client(req.getUserId(), clientName, null));
+		req.setEnterprise(new Enterprise(req.getEnterpriseId(), enterpriseName, enterpriseShortName, null));
+		req.setService(new EnterpriseService(req.getServiceId(), serviceName, null, null));
+		
+		Document document = new Document(req.getDocumentId(), documentTitle, docHash, sign);
+		document.setSignHistory(getDocumentSignatures(req.getDocumentId()));
+		req.setDocument(document);
 		
 		return req;
 	}
@@ -459,6 +556,7 @@ public class BeansRepository {
 			String sql = " Select ds.*, e.name, e.short_name, e.public_key From DocumentSignature ds ";
 			sql += " Inner Join Enterprise e On e.id = ds.enterprise_id ";
 			sql += " Where ds.document_id = ? ";
+			sql += " Order By ds.timestamp ";
 			PreparedStatement ps = connection.prepareStatement(sql);
 			ps.setString(1, documentId);
 			List<DocumentSignature> result = new ArrayList<DocumentSignature>();
@@ -481,6 +579,44 @@ public class BeansRepository {
 			
 			return result;
 			
+		}
+	}
+	
+	public List<String> getContractsAddresses(String documentId) throws Exception{
+		try (Connection connection = getConnection()) {
+			String sql = " Select contract_address From SignRequest Where document_id = ? order by request_time ";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.setString(1, documentId);
+			ResultSet rs = ps.executeQuery();
+			List<String> result = new ArrayList<String>();
+			
+			while (rs.next()) {
+				result.add(rs.getString("contract_address"));
+			}
+			
+			return result;
+		}
+	}
+	
+	public boolean deleteCompletedSignRequestsByDocument(String documentId) throws Exception {
+		try (Connection connection = getConnection()) {
+			String sql = " Delete From SignRequest ";
+			sql += " Where document_id = ?  And status = ? ";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.setString(1, documentId);
+			ps.setInt(2, RequestStatus.ACCEPTED.getId());
+			return ps.execute();
+		}
+	}
+	
+	public boolean deleteCompletedVerifyRequestsByDocument(String documentId) throws Exception {
+		try (Connection connection = getConnection()) {
+			String sql = " Delete From VerifyRequest ";
+			sql += " Where document_id = ?  And status = ? ";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.setString(1, documentId);
+			ps.setInt(2, RequestStatus.ACCEPTED.getId());
+			return ps.execute();
 		}
 	}
 	

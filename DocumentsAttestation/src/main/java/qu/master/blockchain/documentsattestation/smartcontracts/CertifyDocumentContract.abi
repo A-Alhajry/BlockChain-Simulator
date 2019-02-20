@@ -1,0 +1,68 @@
+[
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_docHash",
+				"type": "string"
+			},
+			{
+				"name": "_digiSign",
+				"type": "string"
+			},
+			{
+				"name": "_pubKey",
+				"type": "string"
+			},
+			{
+				"name": "_docLoc",
+				"type": "string"
+			},
+			{
+				"name": "_srvId",
+				"type": "string"
+			}
+		],
+		"name": "setCertification",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getCertification",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	}
+]

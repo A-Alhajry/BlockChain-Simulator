@@ -64,7 +64,7 @@ public class EnterpriseService {
 	public String getAllowedFilesToString() {
 		StringBuilder sb = new StringBuilder();
 		for(String fileType : this.supportedFiles) {
-			sb.append(fileType);
+			sb.append(fileType + " ");
 		}
 		return sb.toString();
 	}

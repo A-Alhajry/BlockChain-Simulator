@@ -37,14 +37,14 @@ public class SignRequestScreen extends AbstractScreen {
 	
 	private static int fontSize = 16;
 	
-	private JLabel headerLabel, enterpriseLabel, serviceLabel, fileLabel, commentsLabel;
+	private JLabel headerLabel, enterpriseLabel, serviceLabel, newFileLabel, signedFileLabel, commentsLabel;
 	private JComboBox<Enterprise> enterprisesList;
 	private JComboBox<EnterpriseService> servicesList;
-	private JFileChooser fileDialog;
+	private JFileChooser fileDialog, signedFileDialog;
 	private JTextField fileInput;
 	private JTextArea commentsInput;
-	private JButton fileButton, submitButton;
-	
+	private JButton fileButton, signedFileButton, submitButton;
+	private boolean isNewFile = true;
 	
 	Font font, headerFont;
 	
@@ -55,10 +55,11 @@ public class SignRequestScreen extends AbstractScreen {
 		//super.setVisible(true);
 		
 		try {
-			headerLabel = new JLabel("New Request");
-			enterpriseLabel = new JLabel("Enterprise:");
+			headerLabel = new JLabel("New Signature Request");
+			enterpriseLabel = new JLabel("Organization:");
 			serviceLabel = new JLabel("Service:    ");
-			fileLabel = new JLabel("Document");
+			newFileLabel = new JLabel("New Document");
+			signedFileLabel = new JLabel("Existing Document");
 			commentsLabel = new JLabel("Comments");
 			
 			EnterpriseComboBoxModel ecbm = new EnterpriseComboBoxModel(controller.getEnterprises());
@@ -71,10 +72,15 @@ public class SignRequestScreen extends AbstractScreen {
 			fileDialog.setMultiSelectionEnabled(false);
 			fileDialog.setDialogTitle("Select A Document To Sign");
 			
-			fileInput = new JTextField(cols);
+			signedFileDialog = new JFileChooser("Select a  Signed Document");
+			signedFileDialog.setMultiSelectionEnabled(false);
+			signedFileDialog.setDialogTitle("Select a  Signed Document");
+			
+			fileInput = new JTextField(cols * 50);
 			commentsInput = new JTextArea(cols, rows * 5);
 			
 			fileButton = new JButton("Upload");
+			signedFileButton = new JButton("Upload");
 			submitButton = new JButton("Submit");
 			
 			font = new Font(enterpriseLabel.getFont().getName(), enterpriseLabel.getFont().getStyle(), fontSize);
@@ -83,7 +89,7 @@ public class SignRequestScreen extends AbstractScreen {
 			headerLabel.setFont(headerFont);
 			enterpriseLabel.setFont(font);
 			serviceLabel.setFont(font);
-			fileLabel.setFont(font);
+			newFileLabel.setFont(font);
 			commentsLabel.setFont(font);
 			
 			initScreen();
@@ -138,7 +144,7 @@ public class SignRequestScreen extends AbstractScreen {
 		JPanel fileInfoPanel = new JPanel();
 		//fileInfoPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
 		//filePanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
-		super.addControl(fileInfoPanel, fileLabel, fileInput, insets, new Dimension((int) labelSize.getWidth() / 10, (int) textSize.getHeight()), new Dimension((int) textSize.getWidth() / 2, (int) textSize.getHeight()));
+		super.addControl(fileInfoPanel, newFileLabel, fileInput, insets, new Dimension((int) labelSize.getWidth() / 10, (int) textSize.getHeight()), new Dimension((int) textSize.getWidth(), (int) textSize.getHeight()));
 		fileButton.setPreferredSize(buttonSize);
 		fileButton.setMinimumSize(buttonSize);
 		filePanel.setLayout(new GridBagLayout());
@@ -185,6 +191,7 @@ public class SignRequestScreen extends AbstractScreen {
 				int fileDialogReturn = fileDialog.showOpenDialog(SignRequestScreen.this);
 				if (fileDialogReturn == JFileChooser.APPROVE_OPTION) {
 					fileInput.setText(fileDialog.getSelectedFile().getAbsolutePath());
+					isNewFile = true;
 				}
 			}
 		});
@@ -219,8 +226,13 @@ public class SignRequestScreen extends AbstractScreen {
 				JComboBox<EnterpriseService> cb = (JComboBox<EnterpriseService>) ev.getSource();
 				EnterpriseService selectedService = (EnterpriseService) cb.getSelectedItem();
 				if (selectedService != null) {
-					String allowedFiles = selectedService.getAllowedFilesToString();
-					FileNameExtensionFilter filter = new FileNameExtensionFilter("Allowed Files : " + allowedFiles, selectedService.getSupportedFiles());
+					String allowedFiles = selectedService.getAllowedFilesToString() + ",atts";
+					String[] supportedFiles = new String[selectedService.getSupportedFiles().length + 1];
+					supportedFiles[0] = "atts";
+					for(int i = 1; i < supportedFiles.length; i++) {
+						supportedFiles[i] = selectedService.getSupportedFiles()[i - 1];
+					}
+					FileNameExtensionFilter filter = new FileNameExtensionFilter("Allowed Files : " + allowedFiles, supportedFiles);
 					fileDialog.setFileFilter(filter);
 				}
 			}
@@ -250,8 +262,8 @@ public class SignRequestScreen extends AbstractScreen {
 						return;
 					}
 					
-					//String password = JOptionPane.showInputDialog(SignRequestScreen.this, "Please Enter Your Password");
-					String password = "mypassword";
+					String password = JOptionPane.showInputDialog(SignRequestScreen.this, "Please Enter Your Password");
+					//String password = "mypassword";
 
 					controller.createSignRequest(password, selectedEnterprise.getId(), selectedService.getId(), filePath.getAbsolutePath(), comments);
 					SignRequestScreen.this.showDialog("Success", "Request Successfully Submitted", JOptionPane.INFORMATION_MESSAGE);

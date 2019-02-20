@@ -24,7 +24,7 @@ public class ClientMainScreen extends JFrame {
 	
 	private CardLayout layout = new CardLayout();
 	
-	public ClientMainScreen(String title) {
+	public ClientMainScreen(String title, int width, int height) {
 		super(title);
 		super.setSize(width, height);
 		super.setPreferredSize(new Dimension(width, height));

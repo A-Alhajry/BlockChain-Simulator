@@ -7,12 +7,19 @@ public class VerifyRequest {
 	private String id;
 	private String userId;
 	private String enterpriseId;
+	private String serviceId;
 	private String contractAddress;
 	private LocalDateTime requestTime;
 	private Document document;
 	private DocumentSignature sign;
+	private String documentId;
 	private String documentSignId;
 	private RequestStatus status;
+	private String documentLocation;
+	private Client client;
+	private Enterprise enterprise;
+	private EnterpriseService service;
+	private Boolean isDocumentValid;
 	
 	public String getId() {
 		return this.id;
@@ -35,6 +42,14 @@ public class VerifyRequest {
 	}
 	public void setEnterpriseId(String enterpriseId) {
 		this.enterpriseId = enterpriseId;
+	}
+	
+	public String getServiceId() {
+		return this.serviceId;
+	}
+	
+	public void setServiceId(String serviceId) {
+		this.serviceId = serviceId;
 	}
 	
 	public String getContractAddress() {
@@ -69,6 +84,14 @@ public class VerifyRequest {
 		this.sign = sign;
 	}
 	
+	public String getDocumentId() {
+		return this.documentId;
+	}
+	
+	public void setDocumentId(String documentId) {
+		this.documentId = documentId;
+	}
+	
 	public void setDocumentSignId(String documentSignId) {
 		this.documentSignId = documentSignId;
 	}
@@ -83,6 +106,46 @@ public class VerifyRequest {
 	
 	public RequestStatus getStatus() {
 		return this.status;
+	}
+	
+	public String getDocumentLocation() {
+		return this.documentLocation;
+	}
+	
+	public void setDocumentLocation(String documentLocation) {
+		this.documentLocation = documentLocation;
+	}
+	
+	public Client getClient() {
+		return this.client;
+	}
+	
+	public void setClient(Client client) {
+		this.client = client;
+	}
+	
+	public Enterprise getEnterprise() {
+		return this.enterprise;
+	}
+	
+	public void setEnterprise(Enterprise enterprise) {
+		this.enterprise = enterprise;
+	}
+	
+	public EnterpriseService getService() {
+		return this.service;
+	}
+	
+	public void setService(EnterpriseService service) {
+		this.service = service;
+	}
+	
+	public Boolean isDocumentValid() {
+		return this.isDocumentValid;
+	}
+	
+	public void setIsDocumentValid(Boolean isDocumentValid) {
+		this.isDocumentValid = isDocumentValid;
 	}
 	
 }
