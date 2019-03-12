@@ -1,0 +1,49 @@
+.col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
+	display: inline-block;
+}
+
+.comp-summ {
+	width: 50%;
+}
+
+.comp-summ .row {
+	width: 800px;
+	height: 200px;
+	margin-top: 30px;
+	border: 1px solid #d3d3d3;
+}
+
+.comp-summ {
+	position: relative;
+	transform: translateX(50%);
+}
+
+.comp-col {
+	transform: translateY(-40%);
+	position: absolute;
+}
+
+.comp-col img {
+	max-width: 80%;
+}
+
+.comp-col img:hover {
+	cursor: pointer;
+}
+
+.comp-ind {
+	font-size: 36px;
+}
+
+.comp-ind-up {
+	color: #28a745;
+}
+
+.comp-ind-down {
+	color: #dc3545;
+}
+
+#FormDiv {
+/* 	padding-left: 500px; */
+	margin-top: 30px;
+}
