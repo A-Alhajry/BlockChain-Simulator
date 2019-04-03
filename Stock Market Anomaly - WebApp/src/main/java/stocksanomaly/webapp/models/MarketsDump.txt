@@ -1,0 +1,8 @@
+1d, name, country, logo, index, actual, forecasted, total_stocks, total_anomilitites
+1, Qatar Stocks Exchange, Qatar, qse.png, 9846460, 984345, 100, 5
+2, Boursa Kuwait , Kuwait, kse.png, 9846460, 984345, 100, 5
+3, Oman Securities Market, Oman, ose.png, 9846460, 984345, 100, 5
+4, Tadawil, Ksa, sse.png, 9846460, 984345, 100, 5
+5, Bahrain Bourse, Bahrain, bse.png, 9846460, 984345, 100, 5
+6, Abu Dhabi Securites Exchange, UAE, ase.png, 9846460, 984345, 100, 5
+7, Dubai Financial Market, Qatar, dse.png, 9846460, 984345, 100, 5

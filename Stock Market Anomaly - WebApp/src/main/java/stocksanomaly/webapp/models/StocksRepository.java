@@ -29,7 +29,7 @@ public class StocksRepository implements StocksRepositoryInterface {
 		
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		
-		BufferedReader reader = new BufferedReader(new InputStreamReader(dataSource));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("StocksDump.txt")));
 		
 		String line = reader.readLine();
 		StockAnomalyDataBean previousBean = null;

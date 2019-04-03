@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 
 import stocksanomaly.webapp.models.CompanySummary;
 import stocksanomaly.webapp.models.StockAnomalyDataBean;
+import stocksanomaly.webapp.models.StocksRepository;
 import stocksanomaly.webapp.models.StocksRepositoryInterface;
 
 @WebServlet(name = "HomeServlet", urlPatterns = {"/home"} )
@@ -25,17 +26,6 @@ public class HomeController extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse res) {
 		
 		try {
-			repo.setDataSource(getServletContext().getResourceAsStream("/StocksDump.txt"));
-//			List<StockAnomalyDataBean> stocks = repo.getStocks(LocalDate.MIN, LocalDate.MAX, "QP");
-//			req.setAttribute("Stocks", stocks);
-			List<CompanySummary> companiesData = repo.getCompaniesSummaries();
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-			LocalDate defaultStartDate = LocalDate.of(2018, 6, 1);
-			LocalDate defaultEndDate = LocalDate.of(2018, 6, 30);
-			Gson gson = new Gson();
-			req.setAttribute("CompaniesData", companiesData);
-			req.setAttribute("startDate", gson.toJson(defaultStartDate));
-			req.setAttribute("endDate", gson.toJson(defaultEndDate));
 			req.getRequestDispatcher("index.jsp").forward(req, res);
 			
 		} catch (Exception e) {

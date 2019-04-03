@@ -119,36 +119,54 @@ function showSeries(selector, stocks) {
 }
 
 function showKendoSeries(placeholder, stocks, companyName, fromDate, toDate) {
-	stocksData = stocks;
+	stocksData = [];
 	var title = "Anomaly Stocks Chart for " + companyName + " from " + fromDate.printFormat() + " to " + toDate.printFormat();
 	var actualSeries = [];
-	var forecastedSeries = [];
+	var forecastedSeries1 = [];
+	var forecastedSeries2 = [];
+	var minValue = 1000;
+	var maxValue = 0;
 	var isAnomaly = true;
 	var labels = [];
 	var icons = [];
 	
-	for(var i = 0; i < stocksData.length; i++) {
-		var stock = stocksData[i];
+	for(var i = 0; i < stocks.length; i++) {
+		var stock = stocks[i];
+		stocksData.push(stock);
+		stocksData.push(stock);
 		actualSeries.push(stock.actualValue);
-		var subSeries = [];
+		//actualSeries.push(stock.actualValue);
+		forecastedSeries1.push(stock.forecastedValue);
+		forecastedSeries2.push(stock.forecastedValue);
 		labels.push(stock.date.day);
-		var forecastedSubSeries = {isAnomaly: isAnomaly, data: []};
-		for(var j = 0; j < stocksData.length; j++) {
-			subSeries.push(stocksData[j].forecastedValue);
-			if (j == i) {
-				//forecastedSubSeries.data.push(stock.forecastedValue);
-			}
-			
-			else {
-				//forecastedSubSeries.data.push(null);
-			}
-			
-		}
-		forecastedSeries.push(subSeries);
+		
+		maxValue = Math.round(Math.max(maxValue, stock.actualValue, stock.forecastedValue));
+		minValue = Math.round(Math.min(minValue, stock.actualValue, stock.forecastedValue));
+		
+//		if (!stock.isAnomaly) {
+//			//forecastedSeries.push(stock.forecastedValue);
+//		}
+//		var subSeries = [];
+//		labels.push(stock.date.day);
+//		var forecastedSubSeries = {isAnomaly: isAnomaly, data: []};
+//		for(var j = 0; j < stocksData.length; j++) {
+//			subSeries.push(stocksData[j].forecastedValue);
+//			if (j == i) {
+//				//forecastedSubSeries.data.push(stock.forecastedValue);
+//			}
+//			
+//			else {
+//				//forecastedSubSeries.data.push(null);
+//			}
+//			
+//		}
+		//forecastedSeries.push(stock.forecastedValue);
 
 		//forecastedSeries.push(forecastedSubSeries);
 	}
 	
+	console.log(stocks.length);
+	console.log(stocksData.length);
 	//forecastedSeries = getForecastedStocksSubSeries(stocksData);
 	var kendoSeries = [];
 	kendoSeries.push({
@@ -157,24 +175,10 @@ function showKendoSeries(placeholder, stocks, companyName, fromDate, toDate) {
 		color: '#28a745'
 	});
 	
-//	kendoSeries.push({
-//		name: 'Forecasted',
-//		data: forecastedSeries,
-//		color: '#dc3545'
-//	});
+	addForecastedSeries(stocks, kendoSeries, forecastedSeries1, 'ltr');
+	addForecastedSeries(stocks, kendoSeries, forecastedSeries2, 'rtl');
 	
-	
-	for(var i = 0 ; i < forecastedSeries.length; i++) {
-		
-		var subSeries = forecastedSeries[i];
-		kendoSeries.push({
-			name: i == 0 ? "Forecasted" : "",
-			data: subSeries,
-			color: '#dc3545'
-		});
-		
-		console.log(stocksData[i])
-	}
+
 	
 	$(placeholder).kendoChart({
 		title: {
@@ -187,6 +191,10 @@ function showKendoSeries(placeholder, stocks, companyName, fromDate, toDate) {
 		series: kendoSeries,
 		categoryAxis: {
 			categories: labels
+		},
+		valueAxis: {
+			min: minValue - 20,
+			max: maxValue + 20
 		}
 		
 		
@@ -284,5 +292,53 @@ function getForecastedStocksSubSeries(stocks) {
 function extractDate(date) {
 	var dateParts = date.split('/');
 	return new LightDate(dateParts[2], dateParts[0], dateParts[1]);
+}
+
+function addForecastedSeries(stocks, kendoSeries, forecastedSeries, strokeDirection) {
+	kendoSeries.push({
+		name: 'Forecasted',
+		data: forecastedSeries,
+		color: '#ff8d00',
+		markers: {
+			visual: function(e) {
+				var stock = $.grep(stocks, function(n, i) {
+					return stocks[i].date.day == e.category;
+				})[0];
+				
+				if (!stock.isAnomaly) {
+					return e.createVisual();
+				}		
+				
+				var path = new kendo.drawing.Path({
+					stroke: {
+						color: '#dc3545',
+						width: 3
+					},
+					
+					fill: {
+						color: 'white'
+					}
+				});
+				
+				var topLeft = e.rect.topLeft();
+				var topRight = e.rect.topRight();
+				var bottomLeft = e.rect.bottomLeft();
+				var bottomRight = e.rect.bottomRight();
+				
+				if (strokeDirection == 'ltr') {
+					path.moveTo(topLeft.x, topLeft.y).lineTo(bottomRight.x, bottomRight.y).close();
+				}
+				
+				
+				else {
+					path.moveTo(topRight.x, topRight.y).lineTo(bottomLeft.x, bottomLeft.y).close();
+				}
+				
+				return path;
+				
+			}
+		}
+	});
+
 }
 

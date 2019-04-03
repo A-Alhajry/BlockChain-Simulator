@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 
 import stocksanomaly.webapp.models.StockAnomalyDataBean;
+import stocksanomaly.webapp.models.StocksRepository;
 import stocksanomaly.webapp.models.StocksRepositoryInterface;
 
 @WebServlet(name = "StocksChartController1", urlPatterns = {"/basic"})
