@@ -9,5 +9,8 @@ public interface StocksRepositoryInterface {
 	
 	List<StockAnomalyDataBean> getStocks(LocalDate startDate, LocalDate endDate, String companyName) throws Exception ;
 	List<CompanySummary> getCompaniesSummaries() throws Exception ;
-	void setDataSource(InputStream is);
+	List<StocksMarket> getStocksMarkets() throws Exception;
+	List<MarketHistory> getMarketsHistory() throws Exception;
+	IndexStats getIndexStats() throws Exception;
+	List<StocksPeriodicData> getYearlyData(int year) throws Exception;
 }

@@ -26,7 +26,6 @@ public class CompaniesStocksListController extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse res) {
 		
 		try {
-			repo.setDataSource(getServletContext().getResourceAsStream("/StocksDump.txt"));
 //			List<StockAnomalyDataBean> stocks = repo.getStocks(LocalDate.MIN, LocalDate.MAX, "QP");
 //			req.setAttribute("Stocks", stocks);
 			List<CompanySummary> companiesData = repo.getCompaniesSummaries();

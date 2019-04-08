@@ -1883,14 +1883,14 @@ var KTDashboard = function() {
         init: function() {
             // init charts
             dailySales();
-            profitShare();
+            //profitShare();
             salesStats();
             salesByApps();
             latestUpdates();
             trendsStats();
             trendsStats2();
             latestTrendsMap();
-            revenueChange();
+            //revenueChange();
             supportCases();
             supportRequests();
             activitiesChart();

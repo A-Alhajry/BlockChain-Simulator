@@ -1,8 +1,8 @@
-1d, name, country, logo, index, actual, forecasted, total_stocks, total_anomilitites
-1, Qatar Stocks Exchange, Qatar, qse.png, 9846460, 984345, 100, 5
-2, Boursa Kuwait , Kuwait, kse.png, 9846460, 984345, 100, 5
-3, Oman Securities Market, Oman, ose.png, 9846460, 984345, 100, 5
-4, Tadawil, Ksa, sse.png, 9846460, 984345, 100, 5
-5, Bahrain Bourse, Bahrain, bse.png, 9846460, 984345, 100, 5
-6, Abu Dhabi Securites Exchange, UAE, ase.png, 9846460, 984345, 100, 5
-7, Dubai Financial Market, Qatar, dse.png, 9846460, 984345, 100, 5
+1d, name, origin, logo,actual, forecasted, total_stocks, total_anomilitites, isOpen, health
+1, Qatar Stocks Exchange,Qatar,qse.png,10989.56,10197.56,100,8,true,3
+2, Boursa Kuwait,Kuwait,kse.png,6241.60,6009.60,150,8,true,3
+3, Oman Securities Market,Muscat,ose.png,4009.54,3909.54,120,30,true,2
+4, Tadawil, Tasi,sse.png,9063.88,9763.88,75,10,false,1
+5, Bahrain Bourse,Bahrain,bse.png,1419.30,1500.30,80,10,false,0
+6, Abu Dhabi Securites Exchange,AbuDhabi,ase.png,5032.19,4999.19,250,90,true,1
+7, Dubai Financial Market,Dubai,dse.png,2776.29,2376.29,40,9,true,2
