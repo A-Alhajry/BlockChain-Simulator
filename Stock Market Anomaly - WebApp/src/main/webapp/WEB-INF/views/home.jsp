@@ -9,7 +9,20 @@
 <html lang="en">
 <!-- begin::Head -->
 <head>
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<!-- <link href="css/bootstrap-datepicker3.min.css" rel="stylesheet"> -->
+<link href="css/style.css" rel="stylesheet">
+<link href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+	rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<!-- <script src="js/bootstrap-datepicker.js"></script> -->
 
+<jsp:include page="kendo-ui-imports.jsp"></jsp:include>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.0-alpha14/js/tempusdominus-bootstrap-4.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.0-alpha14/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet">
 <meta charset="utf-8" />
 
 <title>Stocks Markets Anomalies Analysis</title>
@@ -3372,6 +3385,9 @@
 								<!--end:: Widgets/Revenue Change-->
 							</div>
 						</div>
+<!-- 						<div class="col-xl-12"> -->
+<%-- 							<c:import url="companies_list.jsp"></c:import> --%>
+<!-- 						</div> -->
 							<div class="col-xl-4">
 								<!--Begin::Portlet-->
 								<div style="display:none;" class="kt-portlet kt-portlet--height-fluid">

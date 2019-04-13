@@ -26,7 +26,7 @@ public class StocksRepository implements StocksRepositoryInterface {
 	private List<StockAnomalyDataBean> stocks;
 	private InputStream dataSource;
 	
-	public List<StockAnomalyDataBean> getStocks(LocalDate startDate, LocalDate endDate, String companyName) throws Exception {
+	public List<StockAnomalyDataBean> getStocks(String marketName, LocalDate startDate, LocalDate endDate, String companyName) throws Exception {
 		List<StockAnomalyDataBean> stocks = new ArrayList<StockAnomalyDataBean>();
 		
 		DecimalFormat valueFormat = new DecimalFormat();
@@ -62,10 +62,15 @@ public class StocksRepository implements StocksRepositoryInterface {
 		
 	}
 	
-	public List<CompanySummary> getCompaniesSummaries() throws Exception{
+	public List<StockAnomalyDataBean> getLatestStocks(String marketName, String companyName, int max) throws Exception{
+		List<StockAnomalyDataBean> stocks = this.getStocks(marketName, LocalDate.MIN, LocalDate.MAX, companyName);
+		return stocks.subList(stocks.size() - max, stocks.size());
+	}
+	
+	public List<CompanySummary> getCompaniesSummaries(String marketName) throws Exception{
 		List<CompanySummary> result = new ArrayList<>();
 		
-		List<StockAnomalyDataBean> stocksData = getStocks(LocalDate.of(2018, 10, 1), LocalDate.of(2018, 10, 31), "qp");
+		List<StockAnomalyDataBean> stocksData = getStocks(marketName, LocalDate.of(2018, 10, 1), LocalDate.of(2018, 10, 31), "qp");
 		
 		CompanySummary qp = new CompanySummary();
 		CompanySummary qib = new CompanySummary();
@@ -74,15 +79,17 @@ public class StocksRepository implements StocksRepositoryInterface {
 		CompanySummary ooredoo = new CompanySummary();
 		CompanySummary mannai = new CompanySummary();
 		
+		
 		qp.setFullName("Qatar Petroleum");
 		qp.setShortName("QP");
 		qp.setIconUrl("qp.jpg");
 		qp.setIndicator(StockIndicator.UP);
 		qp.setActualValue(stocksData.get(0).getActualValue());
 		qp.setForecastedValue(stocksData.get(0).getForecastedValue());
-		qp.setDifferenceValue(stocksData.get(0).getDifference());
-		qp.setDifferencePercentage(stocksData.get(0).getPercentage());
+		qp.setDifferenceValue(-stocksData.get(0).getDifference());
+		qp.setDifferencePercentage(0.76);
 		qp.setDate(stocksData.get(0).getDate());
+		qp.setIsAnomaly(true);
 		
 		qib.setFullName("Qatar Islamic Bank");
 		qib.setShortName("QIB");
@@ -100,8 +107,8 @@ public class StocksRepository implements StocksRepositoryInterface {
 		qnb.setIndicator(StockIndicator.NO_CHANGE);
 		qnb.setActualValue(stocksData.get(2).getActualValue());
 		qnb.setForecastedValue(stocksData.get(2).getForecastedValue());
-		qnb.setDifferenceValue(stocksData.get(2).getDifference());
-		qnb.setDifferencePercentage(stocksData.get(2).getPercentage());
+		qnb.setDifferenceValue(0);
+		qnb.setDifferencePercentage(0);
 		qnb.setDate(stocksData.get(2).getDate());
 		
 		vodafone.setFullName("Vodafone Qatar");
@@ -110,8 +117,8 @@ public class StocksRepository implements StocksRepositoryInterface {
 		vodafone.setIndicator(StockIndicator.NO_CHANGE);
 		vodafone.setActualValue(stocksData.get(3).getActualValue());
 		vodafone.setForecastedValue(stocksData.get(3).getForecastedValue());
-		vodafone.setDifferenceValue(stocksData.get(3).getDifference());
-		vodafone.setDifferencePercentage(stocksData.get(3).getPercentage());
+		vodafone.setDifferenceValue(0);
+		vodafone.setDifferencePercentage(0);
 		vodafone.setDate(stocksData.get(3).getDate());
 		
 		ooredoo.setFullName("Ooredoo Qatar");
@@ -133,6 +140,7 @@ public class StocksRepository implements StocksRepositoryInterface {
 		mannai.setDifferenceValue(stocksData.get(5).getDifference());
 		mannai.setDifferencePercentage(stocksData.get(5).getPercentage());
 		mannai.setDate(stocksData.get(5).getDate());
+		mannai.setIsAnomaly(true);
 
 		
 		result.add(mannai);
@@ -141,7 +149,12 @@ public class StocksRepository implements StocksRepositoryInterface {
 		result.add(qnb);
 		result.add(qib);
 		result.add(qp);
-
+		
+		for(CompanySummary s : result) {
+			StocksMarket qatarMarket = this.getStocksMarkets().get(0);
+			s.setMarket(qatarMarket);
+		}
+		
 		return result;
 		
 	}
@@ -296,7 +309,7 @@ public class StocksRepository implements StocksRepositoryInterface {
 		Map<Integer, StocksPeriodicData> result = new HashMap<Integer, StocksPeriodicData>();
 		LocalDate startDate = LocalDate.of(year, 1, 1);
 		LocalDate endDate = LocalDate.of(year, 12, 31);
-		List<StockAnomalyDataBean> stocks = this.getStocks(startDate, endDate, "qp");
+		List<StockAnomalyDataBean> stocks = this.getStocks(null, startDate, endDate, "qp");
 		Map<Integer, Integer> regularsCount = new HashMap<Integer, Integer>();
 		Map<Integer, Integer> anomalsCount = new HashMap<Integer, Integer>();
 		

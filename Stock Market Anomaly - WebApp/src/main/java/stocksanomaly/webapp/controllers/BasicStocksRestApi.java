@@ -28,6 +28,7 @@ public class BasicStocksRestApi extends HttpServlet {
 	public void init(){
 		try {
 			actionsHandlers = new HashMap<>();
+			actionsHandlers.put("latest_data", (req) -> getLatestStocks(req));
 			actionsHandlers.put("comp_list", (req) -> getCompaniesList(req));
 			actionsHandlers.put("markets_list", (req) -> getMarketsList(req));
 		}
@@ -80,6 +81,21 @@ public class BasicStocksRestApi extends HttpServlet {
 		}
 		
 	}	
+	
+	private String getLatestStocks(HttpServletRequest request) {
+		
+		try {
+			String companyName = request.getParameter("compname");
+			String marketName = request.getParameter("market");
+			List<StockAnomalyDataBean> stocks = repo.getLatestStocks(marketName, companyName, 5);
+			Gson gson = new Gson();
+			return gson.toJson(stocks);
+		}
+		
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 	private String getCompaniesList(HttpServletRequest request) {
 		
 		try {
@@ -89,7 +105,7 @@ public class BasicStocksRestApi extends HttpServlet {
 			LocalDate endDate = LocalDate.parse(request.getParameter("enddate"), formatter);
 			String companyName = request.getParameter("compname");
 			
-			List<StockAnomalyDataBean> stocks = repo.getStocks(startDate, endDate, companyName);
+			List<StockAnomalyDataBean> stocks = repo.getStocks(null, startDate, endDate, companyName);
 			
 			double aSum = 0;
 			double fSum = 0;

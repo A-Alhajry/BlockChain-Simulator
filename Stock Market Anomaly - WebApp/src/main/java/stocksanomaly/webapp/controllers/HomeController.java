@@ -30,11 +30,17 @@ public class HomeController extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse res) {
 		
 		try {
+			LocalDate defaultStartDate = LocalDate.of(2017, 6, 1);
+			LocalDate defaultEndDate = LocalDate.of(2017, 6, 30);
 			List<StocksMarket> markets = repo.getStocksMarkets();
 			List<MarketHistory> history = repo.getMarketsHistory();
+			//List<CompanySummary> companiesData = repo.getCompaniesSummaries();
 			IndexStats indexStats = repo.getIndexStats();
 			List<StocksPeriodicData> yearlyData = repo.getYearlyData(2017);
 			Gson gson = new Gson();
+			//req.setAttribute("CompaniesData", companiesData);
+			req.setAttribute("startDate", gson.toJson(defaultStartDate));
+			req.setAttribute("endDate", gson.toJson(defaultEndDate));
 			req.setAttribute("Markets", gson.toJson(markets));
 			req.setAttribute("History", gson.toJson(history));
 			req.setAttribute("IndexStats", gson.toJson(indexStats));

@@ -16,6 +16,7 @@ public class StockAnomalyDataBean {
 	private double difference;
 	private double percentage;
 	private boolean isAnomaly;
+	private StocksMarket market;
 	
 	public StockAnomalyDataBean() {
 		
@@ -131,5 +132,13 @@ public class StockAnomalyDataBean {
 	
 	private double roundStockData(double data) {
 		return Math.round(data * 100) / 100.0;
+	}
+	
+	public StocksMarket getMarket() {
+		return this.market;
+	}
+	
+	public void setMarket(StocksMarket market) {
+		this.market = market;
 	}
 }

@@ -16,7 +16,7 @@ import stocksanomaly.webapp.models.CompanySummary;
 import stocksanomaly.webapp.models.StocksRepository;
 import stocksanomaly.webapp.models.StocksRepositoryInterface;
 
-@WebServlet(name = "CompaniesList", urlPatterns = {"/company/list"})
+@WebServlet(name = "CompaniesList", urlPatterns = {"/companylist"})
 public class CompaniesStocksListController extends HttpServlet {
 	
 	
@@ -28,15 +28,17 @@ public class CompaniesStocksListController extends HttpServlet {
 		try {
 //			List<StockAnomalyDataBean> stocks = repo.getStocks(LocalDate.MIN, LocalDate.MAX, "QP");
 //			req.setAttribute("Stocks", stocks);
-			List<CompanySummary> companiesData = repo.getCompaniesSummaries();
+			String market = req.getParameter("market");
+			List<CompanySummary> companiesData = repo.getCompaniesSummaries(market);
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 			LocalDate defaultStartDate = LocalDate.of(2018, 6, 1);
 			LocalDate defaultEndDate = LocalDate.of(2018, 6, 30);
 			Gson gson = new Gson();
+			req.setAttribute("Market", companiesData.get(0).getMarket());
 			req.setAttribute("CompaniesData", companiesData);
 			req.setAttribute("startDate", gson.toJson(defaultStartDate));
 			req.setAttribute("endDate", gson.toJson(defaultEndDate));
-			req.getRequestDispatcher("views/companies_list.jsp").forward(req, res);
+			req.getRequestDispatcher("WEB-INF/views/companies_list.jsp").forward(req, res);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

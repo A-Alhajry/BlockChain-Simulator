@@ -207,7 +207,8 @@ function showKendoSeries(placeholder, stocks, companyName, fromDate, toDate) {
 function showStocksChart(startDate, endDate, companyName, placeholder) {
 
 	$(".input-group.date").datetimepicker({format: 'L'});
-	var url = "api/basic?compname=" + companyName + "&startdate=" + startDate.apiFormat() + "&enddate=" + endDate.apiFormat();
+	console.log($(".input-group.date").datetimepicker());
+	var url = "api/service?action=comp_list&compname=" + companyName + "&startdate=" + startDate.apiFormat() + "&enddate=" + endDate.apiFormat();
 	$.get({
 		url: url,
 		success: function(stocks) {
@@ -216,6 +217,35 @@ function showStocksChart(startDate, endDate, companyName, placeholder) {
 		},
 		error: function(e) {
 			alert("Error Occurred !");
+		}
+	})
+}
+
+function showStocksTable(companyName, tbody) {
+	var url = "api/service?action=latest_data&compname=" + companyName;
+	$.get({
+		url: url,
+		success: function(data) {
+			$("#DateTr").html("<td><strong>Date</strong></td>");
+			$("#ActualTr").html("<td><strong>Actual</strong></td>");
+			$("#ForecastedTr").html("<td><strong>Forecasted</strong></td>");
+			$("#StatusTr").html("<td><strong>Status</strong></td>");
+			
+			for(var i = 0; i < data.length; i++) {
+				var stock = data[i];
+
+				
+				$("#DateTr").append("<td> " + stock.date.year + "/" + stock.date.month + "/" + stock.date.day + " </td>");
+				$("#ActualTr").append("<td> " + stock.actualValue + " </td>");
+				$("#ForecastedTr").append("<td> " + stock.forecastedValue + " </td>");
+				if (stock.isAnomaly) {
+					$("#StatusTr").append("<td class='comp-ind-down'> Anomaly </td>");
+				}
+				
+				else {
+					$("#StatusTr").append("<td class='comp-ind-up'> Regular </td>");
+				}
+			}
 		}
 	})
 }
@@ -395,13 +425,14 @@ function loadMarketsSummaryDataTable(selector) {
 			autoHide: false,
 			// callback function support for column rendering
 			template: function(data, i) {
+				var marketName = data.name;
 				var output = '\
 					<div class="kt-user-card-v2">\
 					<div class="kt-user-card-v2__pic">\
 					<img src="images/' + data.logo + '" alt="photo">\
 					</div>\
 					<div class="kt-user-card-v2__details">\
-					<a href="#" class="kt-user-card-v2__name">' + data.name + '</a>\
+					<a href="/StocksAnomalyWebApp/companylist?market=' + marketName +  '"class="kt-user-card-v2__name">' + data.name + '</a>\
 					<span class="kt-user-card-v2__email">' +
 					data.indexName + '</span>\
 					</div>\

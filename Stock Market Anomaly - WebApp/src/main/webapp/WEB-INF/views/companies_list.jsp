@@ -2,8 +2,6 @@
 <%@ page isELIgnored="false"%>
 
 
-<html>
-
 <head>
 <link href="css/bootstrap.min.css" rel="stylesheet">
 <!-- <link href="css/bootstrap-datepicker3.min.css" rel="stylesheet"> -->
@@ -26,11 +24,45 @@
 	endDate = ${endDate};
 
 </script>
-<body>
 
 	<div >
 		<div class="comp-summ">
+			<h2>Qatar Stock Exchane - Today Index Summary</h2>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="col-md-3 comp-col" style="top: 70px;">
+							<a href="#${company.shortName}" class="comp-link"><img src="images/${Market.logo}"
+								class="img-fluid"></a>
+						</div>
+						<div class="col-md-3 comp-col" style="top: 90px; left: 300px;">
+							<strong>{market.name} </strong>
+							<p>Qatar</p>
+							<p>${LocalDate.now()}
+						</div>
+						<div class="col-md-3 comp-col" style="top: 90px; left: 550px">
 
+							
+							<strong><i class="fas fa-arrow-up comp-ind-up"></i>
+							</strong> <strong><span class="comp-ind-up">30</span></strong>
+							<strong><span class="comp-ind-up">(0.48%)</span></strong>
+							<br /> <br />
+							<p>
+								<strong >Actual :  <i style="font-size: 22px;" class="">10989.56</i></strong><strong><br/>Forecasted
+									: </strong>10197.56 <br/> <strong>Total Companies: </strong> 100 </br> <strong>Total Anomalies: </strong> 8
+							</p>
+						</div>
+					</div>
+					
+					<hr style="height: 30px;" />
+				</div>
+
+				
+
+		</div>
+		<br/>
+		
+		<div class="comp-summ" style="margin-top: 20px;">
+			<h2>Qatar Stock Exchane - Registered Companies Summaries</h2>
 			<c:forEach items="${CompaniesData}" var="company">
 				<div class="row"
 					
@@ -61,12 +93,23 @@
 									<c:set var="indArr" scope="session" value='${""}'></c:set>
 								</c:otherwise>
 							</c:choose>
+							<c:choose>
+								<c:when test="${company.isAnomaly == true}">
+									<c:set var="statusIcon" scope="session" value='${"fas fa-exclamation"}'></c:set>
+									<c:set var="statusCss" scope="session" value='${"comp-ind-down"}'></c:set>
+								</c:when>
+								<c:otherwise>
+<%-- 									<c:set var="statusIcon" scope="session"  value='${"fas fa-check"}'></c:set> --%>
+									<c:set var="statusIcon" scope="session"  value='${""}'></c:set>
+									<c:set var="statusCss" scope="session" value='${"comp-ind-up"}'></c:set>
+								</c:otherwise>
+							</c:choose>
 							<strong><i class="fas fa-arrow-${indArr} ${indCss}"></i>
 							</strong> <strong><span class="${indCss}">${company.differenceValue}</span></strong>
 							<strong><span class="${indCss}">(${company.differencePercentage}%)</span></strong>
 							<br /> <br />
 							<p>
-								<strong>Actual :</strong> ${company.actualValue} <strong>Forecasted
+								<strong >Actual : ${company.actualValue} <i style="font-size: 22px;" class="${statusIcon} ${statusCss}"></i></strong><strong><br/>Forecasted
 									: </strong>${company.forecastedValue}
 							</p>
 						</div>
@@ -78,6 +121,47 @@
 				
 
 			</c:forEach>
+		</div>
+		
+		<div id="TableDiv" class="container" style="margin-top: 20px; display: none;">
+			<div class="row">
+				<table class="table table-striped table-bordered">
+					<tbody>
+						<tr id="DateTr">
+							<td><strong>Date</strong></td>
+							<td>18/06/2017</td>
+							<td>19/06/2017</td>
+							<td>20/06/2017</td>
+							<td>21/06/2017</td>
+							<td>22/06/2017</td>
+						</tr>
+						<tr id="ActualTr">
+							<td><strong>Actual</strong></td>
+							<td>54.700001</td>
+							<td>54.299999</td>
+							<td>53.599998</td>
+							<td>54.099998</td>
+							<td>55.599998</td>
+						</tr>
+						<tr id="ForecastedTr">
+							<td><strong>Forecasted</strong></td>
+							<td>60.49984851</td>
+							<td>54.44897792</td>
+							<td>52.14795235</td>
+							<td>52.76207297</td>
+							<td>54.18635548</td>
+						</tr>
+						<tr id="StatusTr">
+							<td ><strong>Status</strong></td>
+							<td class="comp-ind-down">Anomaly</td>
+							<td class="comp-ind-up">Normal</td>
+							<td class="comp-ind-up">Normal</td>
+							<td class="comp-ind-up">Normal</td>
+							<td class="comp-ind-up">Normal</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 
 		<div id="FormDiv" class="container" >
@@ -150,7 +234,6 @@
 	<%-- 			</c:forEach> --%>
 	<!-- 		</tbody> -->
 	<!-- 	</table> -->
-</body>
 <script>
 	$(document).ready(function() {
 
@@ -159,14 +242,17 @@
 		$("#FormDiv").hide();
 		$(".comp-link").click(function(e) {
 			//$("hr").hide();
+			e.preventDefault();
 			var parentRow = $(this).closest(".row");
 			var companyName = parentRow.data("comp-name");
 			fromDate = new LightDate(startDate.year, startDate.month, startDate.day);
 			toDate = new LightDate(endDate.year, endDate.month, endDate.day);
 			showStocksChart(fromDate, toDate, companyName, '#KendoChart');
+			showStocksTable(companyName, "#TableDiv tbody");
 			$(".comp-summ .row").hide();
 			parentRow.show();
 			$("#FormDiv").show();
+			$("#TableDiv").show();
 			$("#FormDiv").data('compname', companyName);
 
 		});
@@ -195,4 +281,3 @@
 		//$("#ToDate").datetimepicker({format: 'L'});
 	})
 </script>
-</html>

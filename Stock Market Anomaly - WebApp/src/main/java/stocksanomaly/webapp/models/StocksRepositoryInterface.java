@@ -7,8 +7,9 @@ import java.util.List;
 
 public interface StocksRepositoryInterface {
 	
-	List<StockAnomalyDataBean> getStocks(LocalDate startDate, LocalDate endDate, String companyName) throws Exception ;
-	List<CompanySummary> getCompaniesSummaries() throws Exception ;
+	List<StockAnomalyDataBean> getStocks(String marketName, LocalDate startDate, LocalDate endDate, String companyName) throws Exception ;
+	List<StockAnomalyDataBean> getLatestStocks(String marketName, String companyName, int max) throws Exception;
+	List<CompanySummary> getCompaniesSummaries(String marketName) throws Exception ;
 	List<StocksMarket> getStocksMarkets() throws Exception;
 	List<MarketHistory> getMarketsHistory() throws Exception;
 	IndexStats getIndexStats() throws Exception;

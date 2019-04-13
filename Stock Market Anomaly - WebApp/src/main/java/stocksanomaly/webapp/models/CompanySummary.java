@@ -13,6 +13,8 @@ public class CompanySummary {
 	private double differenceValue;
 	private double differencePercentage;
 	private LocalDate date;
+	private boolean isAnomaly;
+	private StocksMarket market;
 	
 	public String getFullName() {
 		return this.fullName;
@@ -84,6 +86,22 @@ public class CompanySummary {
 	
 	public void setDate(LocalDate date) {
 		this.date = date;
+	}
+	
+	public boolean getIsAnomaly() {
+		return this.isAnomaly;
+	}
+	
+	public void setIsAnomaly(boolean isAnomaly) {
+		this.isAnomaly = isAnomaly;
+	}
+	
+	public StocksMarket getMarket() {
+		return this.market;
+	}
+	
+	public void setMarket(StocksMarket market) {
+		this.market = market;
 	}
 	
 }
