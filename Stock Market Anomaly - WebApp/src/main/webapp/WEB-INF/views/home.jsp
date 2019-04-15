@@ -3111,7 +3111,7 @@
 				<div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor">
 
 					<!-- begin:: Content Head -->
-					<div class="kt-subheader   kt-grid__item" id="kt_subheader">
+					<div class="kt-subheader   kt-grid__item hidden " style="display: none;" id="kt_subheader">
 						<div class="kt-subheader__main">
 							<h3 class="kt-subheader__title">Dashboard</h3>
 
@@ -3544,7 +3544,7 @@
 						<!--End::Section-->
 
 						<!--Begin::Section-->
-						<div class="row">
+						<div class="row" style="display: none;">
 							
 							<div class="col-xl-4">
 								<!--begin:: Widgets/Blog-->
@@ -3594,7 +3594,7 @@
 						<!--End::Section-->
 
 						<!--Begin::Section-->
-						<div class="row">
+						<div class="row" style="display: none;">
 							<div class="col-xl-8">
 								<!--begin:: Widgets/Best Sellers-->
 								<div class="kt-portlet kt-portlet--height-fluid">
@@ -4072,7 +4072,7 @@
 						<!--End::Section-->
 
 						<!--Begin::Section-->
-						<div class="row">
+						<div class="row" style="display: none;">
 							<div class="col-xl-4">
 								<!--begin:: Widgets/Daily Sales-->
 								<div class="kt-portlet kt-portlet--height-fluid">
@@ -4093,7 +4093,7 @@
 						<!--End::Section-->
 
 						<!--Begin::Section-->
-						<div class="row">
+						<div class="row" style="display: none;">
 							<div class="col-xl-4">
 								<!--begin:: Widgets/Tasks -->
 								<div
@@ -5976,7 +5976,7 @@
 	</div>
 	<!-- end::Scrolltop -->
 	<!-- begin::Sticky Toolbar -->
-	<ul class="kt-sticky-toolbar" style="margin-top: 30px;">
+	<ul class="kt-sticky-toolbar" style="display: none;margin-top: 30px;">
 		<li class="kt-sticky-toolbar__item kt-sticky-toolbar__item--success"
 			id="kt_demo_panel_toggle" data-toggle="kt-tooltip"
 			title="Check out more demos" data-placement="right"><a href="#"

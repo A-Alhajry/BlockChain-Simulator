@@ -35,7 +35,7 @@
 								class="img-fluid"></a>
 						</div>
 						<div class="col-md-3 comp-col" style="top: 90px; left: 300px;">
-							<strong>{market.name} </strong>
+							<strong>${Market.name} </strong>
 							<p>Qatar</p>
 							<p>${LocalDate.now()}
 						</div>
@@ -47,8 +47,9 @@
 							<strong><span class="comp-ind-up">(0.48%)</span></strong>
 							<br /> <br />
 							<p>
-								<strong >Actual :  <i style="font-size: 22px;" class="">10989.56</i></strong><strong><br/>Forecasted
-									: </strong>10197.56 <br/> <strong>Total Companies: </strong> 100 </br> <strong>Total Anomalies: </strong> 8
+								<strong >Actual :  <i style="font-size: 22px;" class=""></i></strong>${Market.actualIndex}<strong><br/>Forecasted
+									: </strong>${Market.forecastedIndex} <br/> <strong>Total Companies: </strong> ${Market.totalStocks} <br/>
+									<strong>Total Anomalies: </strong> ${Market.totalAnomals}
 							</p>
 						</div>
 					</div>
@@ -109,7 +110,7 @@
 							<strong><span class="${indCss}">(${company.differencePercentage}%)</span></strong>
 							<br /> <br />
 							<p>
-								<strong >Actual : ${company.actualValue} <i style="font-size: 22px;" class="${statusIcon} ${statusCss}"></i></strong><strong><br/>Forecasted
+								<strong >Actual : </strong>${company.actualValue} <i style="font-size: 22px;" class="${statusIcon} ${statusCss}"></i><strong><br/>Forecasted
 									: </strong>${company.forecastedValue}
 							</p>
 						</div>
