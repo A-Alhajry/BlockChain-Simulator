@@ -175,8 +175,8 @@ function showKendoSeries(placeholder, stocks, companyName, fromDate, toDate) {
 		color: '#28a745'
 	});
 
-	addForecastedSeries(stocks, kendoSeries, forecastedSeries1, 'ltr');
-	addForecastedSeries(stocks, kendoSeries, forecastedSeries2, 'rtl');
+	addForecastedSeries(stocks, kendoSeries, forecastedSeries1, 'ltr', true);
+	addForecastedSeries(stocks, kendoSeries, forecastedSeries2, 'rtl', false);
 
 
 
@@ -324,11 +324,12 @@ function extractDate(date) {
 	return new LightDate(dateParts[2], dateParts[0], dateParts[1]);
 }
 
-function addForecastedSeries(stocks, kendoSeries, forecastedSeries, strokeDirection) {
+function addForecastedSeries(stocks, kendoSeries, forecastedSeries, strokeDirection, showLegend) {
 	kendoSeries.push({
 		name: 'Forecasted',
 		data: forecastedSeries,
 		color: '#ff8d00',
+		visibleInLegend: showLegend,
 		markers: {
 			visual: function(e) {
 				var stock = $.grep(stocks, function(n, i) {

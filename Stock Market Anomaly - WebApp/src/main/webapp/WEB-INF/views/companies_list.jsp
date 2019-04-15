@@ -62,7 +62,7 @@
 		</div>
 		<br/>
 		
-		<div class="comp-summ" style="margin-top: 20px;">
+		<div class="comp-summ comp-div" style="margin-top: 20px;">
 			<h2>Qatar Stock Exchane - Registered Companies Summaries</h2>
 			<c:forEach items="${CompaniesData}" var="company">
 				<div class="row"
@@ -243,14 +243,14 @@
 		$("#FormDiv").hide();
 		$(".comp-link").click(function(e) {
 			//$("hr").hide();
-			e.preventDefault();
+			//e.preventDefault();
 			var parentRow = $(this).closest(".row");
 			var companyName = parentRow.data("comp-name");
 			fromDate = new LightDate(startDate.year, startDate.month, startDate.day);
 			toDate = new LightDate(endDate.year, endDate.month, endDate.day);
 			showStocksChart(fromDate, toDate, companyName, '#KendoChart');
 			showStocksTable(companyName, "#TableDiv tbody");
-			$(".comp-summ .row").hide();
+			$(".comp-div .row").hide();
 			parentRow.show();
 			$("#FormDiv").show();
 			$("#TableDiv").show();
@@ -272,7 +272,7 @@
 			if (!url.includes('#')) {
 				 $("#FormDiv").hide();
 				 $("#KendoChart").hide();
-				 $(".comp-summ .row").show();
+				 $(".comp-div .row").show();
 			}
 		})
 	});
