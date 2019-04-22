@@ -1,0 +1,47 @@
+.form-group {
+	display: inline-block;
+}
+
+.padd-0 {
+	padding: 0;
+}
+
+.arabic-font {
+	font-family: 'Reem Kufi';
+}
+
+.inline {
+	display: inline-block;
+}
+
+.col-md-8#SearchForm {
+	width: 60%;
+}
+
+.vert-base {
+	vertical-align: baseline;
+}
+
+.width-80 {
+	width: 80%;
+}
+
+.inline-form-title {
+	width: initial;
+	font-size: 1.5rem;
+}
+
+.search-result {
+/* 	border: 1px solid lightgray; */
+/* 	margin: 20px 0; */
+	padding: 10px 10px;
+}
+
+.search-result-title {
+	font-size: 20px;
+	color: #007bff;
+}
+
+.search-result-body {
+	font-size: 16px;
+}

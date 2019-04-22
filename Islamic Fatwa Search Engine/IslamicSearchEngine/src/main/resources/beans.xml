@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc 
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<bean id="seMgr"
+		class="qu.master.ir.isi.core.SearchEnginesManager" scope="singleton">
+		<property name="searchEngines">
+			<list value-type="qu.master.ir.isi.core.SearchEngineInterface">
+				<ref bean="googleSearchEngine" />
+				<ref bean="bingSearchEngine" />
+			</list>
+		</property>
+		<property name="searchSources">
+			<list value-type="qu.master.ir.isi.models.SearchSource">
+				<ref bean="islamWeb" />
+				<ref bean="islamQa" />
+				<ref bean="binBaz" />
+			</list>
+		</property>
+		<property name="preSearchSteps">
+			<list value-type="qu.master.ir.isi.core.PreSearchStep">
+				<ref bean="basicQueryProc" />
+			</list>
+		</property>
+		<property name="postSearchSteps">
+			<list value-type="qu.master.ir.isi.core.PostSearchStep">
+				<ref bean="naiveMerger" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="googleSearchEngine"
+		class="qu.master.ir.isi.core.GoogleSearchEngine" scope="prototype">
+		<property name="engineScore" value="5.0" />
+		<property name="enabled" value="true" />
+	</bean>
+
+
+	<bean id="bingSearchEngine"
+		class="qu.master.ir.isi.core.BingSearchEngine" scope="prototype">
+		<property name="engineScore" value="5.0" />
+		<property name="enabled" value="true" />
+		<property name="searchMode" value="custom" />
+	</bean>
+
+	<bean id="islamWeb" class="qu.master.ir.isi.models.SearchSource"
+		scope="prototype">
+		<property name="url" value="https://www.islamweb.net" />
+		<property name="enabled" value="true" />
+		<property name="score" value="0.5" />
+	</bean>
+
+	<bean id="islamQa" class="qu.master.ir.isi.models.SearchSource"
+		scope="prototype">
+		<property name="url" value="https://islamqa.info" />
+		<property name="enabled" value="true" />
+		<property name="score" value="0.5" />
+	</bean>
+	
+	<bean id="binBaz" class="qu.master.ir.isi.models.SearchSource" scope="prototype">
+		<property name="url" value="https://binbaz.org.sa/" />
+		<property name="enabled" value="true" />
+		<property name="score" value="0.5" />
+	</bean>
+
+	<bean id="basicQueryProc"
+		class="qu.master.ir.isi.core.BasicPreSearchStep" scope="prototype">
+	</bean>
+	<bean id="naiveMerger"
+		class="qu.master.ir.isi.core.NaiveSearchResultsMerger"
+		scope="prototype">
+		<property name="resultsMax" value="10" />
+	</bean>
+</beans>
